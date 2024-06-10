@@ -4,34 +4,30 @@
 #include <SDL2/SDL_syswm.h>
 #include <iostream>
 
-SDL_Window* Vulkan::m_Window;
-unsigned int Vulkan::m_extension_count;
-std::vector<const char*>* Vulkan::m_extensions;
-std::vector<const char*> Vulkan::m_layers;
-vk::ApplicationInfo Vulkan::m_appInfo;
-vk::InstanceCreateInfo Vulkan::m_instInfo;
-vk::Instance Vulkan::m_instance;
-VkSurfaceKHR Vulkan::m_surface;
-vk::SurfaceKHR* Vulkan::m_pSurface;
-bool Vulkan::m_stillRunning = true;
-SDL_Event Vulkan::m_event;
-unsigned int Vulkan::m_DeltaTime = 0;
+#include "SDLApp.hxx"
+
+Vulkan::Vulkan()
+    : SingletonBase(UPDATE_ORDER::NO_UPDATE)
+    , m_Window(nullptr)
+    , m_extension_count(0)
+    , m_extensions(nullptr)
+    , m_pSurface(nullptr)
+    , m_surface(VK_NULL_HANDLE)
+{
+
+}
+
+Vulkan::~Vulkan()
+{
+    UnInit();
+}
 
 /// @brief 初期化処理
 /// @return 成功したらtrue
 bool Vulkan::Init()
 {
-    // Create an SDL window that supports Vulkan rendering.
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-        std::cout << "Could not initialize SDL." << std::endl;
-        return false;
-    }
-    m_Window = SDL_CreateWindow("Vulkan Window", SDL_WINDOWPOS_CENTERED,
-        SDL_WINDOWPOS_CENTERED, 1280, 720, SDL_WINDOW_VULKAN);
-    if (m_Window == NULL) {
-        std::cout << "Could not create SDL window." << std::endl;
-        return false;
-    }
+    // ウィンドウの取得
+    m_Window = SDLApp::GetInstance().GetWindow();
 
     // Get WSI extensions from SDL (we can add more if we like - we just can't remove these)
     if (!SDL_Vulkan_GetInstanceExtensions(m_Window, &m_extension_count, NULL)) {
@@ -86,32 +82,18 @@ bool Vulkan::Init()
 
     return true;
 }
+
 /// @brief 更新処理
 void Vulkan::Update()
 {
-    m_DeltaTime = SDL_GetTicks() - m_DeltaTime;
 
-    // イベントを取得
-    while (SDL_PollEvent(&m_event)) {
-
-        switch (m_event.type) {
-
-        case SDL_QUIT:
-            m_stillRunning = false;
-            break;
-
-        default:
-            // Do nothing.
-            break;
-        }
-    }
 }
 
 /// @brief 終了処理
 void Vulkan::UnInit()
 {
-    m_instance.destroySurfaceKHR(*m_pSurface);// サーフェスの破棄
-    SDL_DestroyWindow(m_Window);// ウィンドウの破棄
-    SDL_Quit();// SDLの終了
-    m_instance.destroy();// インスタンスの破棄
+    m_instance.destroySurfaceKHR(*m_pSurface);  // サーフェスの破棄
+    SDL_DestroyWindow(m_Window);    // ウィンドウの破棄
+    SDL_Quit(); // SDLの終了
+    m_instance.destroy();   // インスタンスの破棄
 }

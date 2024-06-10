@@ -11,6 +11,12 @@
     <Filter Include="Manager">
       <UniqueIdentifier>{79ecec63-9006-4266-844b-7ec3b1cb3240}</UniqueIdentifier>
     </Filter>
+    <Filter Include="System\Singletons">
+      <UniqueIdentifier>{ecdf0c61-29e8-4cce-84e5-b004fd69898d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System\Singletons\Dominatior">
+      <UniqueIdentifier>{30728b43-ec81-4031-8920-682937f38f71}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -20,6 +26,15 @@
       <Filter>System</Filter>
     </ClCompile>
     <ClCompile Include="SingletonsMng.cxx">
+      <Filter>System\Singletons\Dominatior</Filter>
+    </ClCompile>
+    <ClCompile Include="Supervision.cxx">
+      <Filter>System\Singletons\Dominatior</Filter>
+    </ClCompile>
+    <ClCompile Include="SDLApp.cxx">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugClass.cxx">
       <Filter>System</Filter>
     </ClCompile>
   </ItemGroup>
@@ -31,6 +46,12 @@
       <Filter>System</Filter>
     </ClInclude>
     <ClInclude Include="SingletonsMng.hxx">
+      <Filter>System\Singletons\Dominatior</Filter>
+    </ClInclude>
+    <ClInclude Include="SDLApp.hxx">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugClass.hxx">
       <Filter>System</Filter>
     </ClInclude>
   </ItemGroup>

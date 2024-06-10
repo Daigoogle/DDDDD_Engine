@@ -43,22 +43,23 @@ Create and destroy a Vulkan surface on an SDL window.
 #include <iostream>
 #include <vector>
 
+#include "SingletonsMng.hxx"
+#include "SDLApp.hxx"
 #include "Vulkan.hxx"
-
 
 int main()
 {
     // SDL初期化 ...失敗なら終了
-    if (!Vulkan::Init())
+    if (!Supervision::Initialize())
         return 1;
 
     // メインループ
-    while(Vulkan::IsRunning()) {
-        Vulkan::Update();
+    while(SDLApp::GetInstance().IsRunning()) {
+        Supervision::Updater();
     }
 
     // 終了処理
-    Vulkan::UnInit();
+    Supervision::Finalize();
 
     return 0;
 }

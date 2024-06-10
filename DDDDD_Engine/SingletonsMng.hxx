@@ -13,19 +13,16 @@
 #include <vector>
 #include <mutex>
 
+// =-=-= マクロ定義部 =-=-=
+#define SINGLETON_MAKES(Type) Type(const Type&) = delete;Type& operator=(const Type&) = delete;Type(Type&&) = delete;Type& operator=(Type&&) = delete;static Type& GetInstance(){return Singleton<Type>::GetInstance();} 
+
 // =-=-= 定数定義部 =-=-=
-enum class INIT_ORDER {
-	FIRST_INIT = 0,	//１番に更新
-	SECOND_INIT,	//２番に更新
-	THIRD_INIT,		//３番に更新
-	FOURTH_INIT,	//４番に更新
-	FIFTH_INIT,		//５番に更新
-};
 enum class UPDATE_ORDER {
-	NO_UPDATE = 0,	//更新しない
+	NO_UPDATE = -1,	//更新しない
 	FIRST_UPDATE,	//１番に更新
 	SECOND_UPDATE,	//２番に更新
 	THIRD_UPDATE,	//３番に更新
+	LAST_UPDATE		//最後に更新
 };
 
 /// @brief シングルトンの基底クラス
@@ -33,25 +30,30 @@ class SingletonBase
 {
 public:
 	/// @brief コンストラクタ
-	SingletonBase();
+	SingletonBase(UPDATE_ORDER Order = UPDATE_ORDER::NO_UPDATE);
 	/// @brief 初期化処理 ※オーバーライドしてください
-	/// @return 成功したらtrue
 	virtual bool Init() = 0;
-	/// @brief 更新処理 ※必要な場合のみオーバーライドしてください
+	/// @brief 更新処理 ※オーバーライドしてください
 	virtual void Update() {};
-	/// @brief デストラクタ ※オーバーライドしてください
-	virtual ~SingletonBase() = 0;
-private:
-	UPDATE_ORDER m_Order = UPDATE_ORDER::NO_UPDATE;//更新順 ※イニシャライザーで任意の値に初期化してください
+	/// @brief デストラクタ
+	virtual ~SingletonBase() {};
 };
 
 /// @brief シングルトンの最終処理を行うクラス
-class SingletonManager final
+class Supervision final
 {
 public:
 	/// @brief 終了処理の関数型
-	using Function = void(*)();
-	using SngltFunc = void(SingletonBase::*)();
+	using Function = void(*)(); 
+
+	/// @brief 初期化処理を行う
+	/// @return 成功したらtrue
+	static bool Initialize();
+	/// @brief 更新処理を行う
+	static void Updater();
+	/// @brief 終了処理を行う
+	static void Finalize();
+
 	/// @brief 終了処理を追加する
 	/// @param func 終了処理
 	static void addFinalizer(Function func);
@@ -59,14 +61,8 @@ public:
 	/// @param pSingleton 処理するシングルトン
 	/// @param order 更新順
 	static void addUpdater(SingletonBase* pSingleton, UPDATE_ORDER order);
-	/// @brief 更新処理を行う
-	static void Updater();
-	/// @brief 終了処理を行う
-	static void finalize();
-
 private:
-	static std::array<std::vector<SngltFunc>,static_cast<int>(INIT_ORDER::FIFTH_INIT)+1> m_Initializers;//初期化処理
-	static std::array<std::vector<SngltFunc>, static_cast<int>(UPDATE_ORDER::THIRD_UPDATE)> m_Updaters;//更新処理
+	static std::array<std::vector<SingletonBase*>, static_cast<int>(UPDATE_ORDER::LAST_UPDATE) + 1> m_Updaters;//更新処理
 	static std::vector<Function> m_finalizers;//終了処理
 };
 
@@ -82,22 +78,14 @@ public:
 	{
 		//初めて呼び出されたならインスタンスの生成
 		std::call_once(initFlag, Create);
-		assert(instance);
 		return *instance;
-	}
-
-	/// @brief インスタンスを取得する
-	explicit operator Type&()
-	{
-		return GetInstance();
 	}
 private:
 	/// @brief インスタンスを生成する
 	static void Create()
 	{
-		static_cast<SingletonBase>(Type);//シングルトンの基底クラスを継承しているかチェック
 		instance = new Type;
-		SingletonFinalizer::addFinalizer(&Singleton<Type>::destroy);
+		Supervision::addFinalizer(&Singleton<Type>::destroy);
 	}
 
 	/// @brief インスタンスを破棄する

@@ -156,12 +156,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DebugClass.cxx" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="SDLApp.cxx" />
     <ClCompile Include="SingletonsMng.cxx" />
+    <ClCompile Include="Supervision.cxx" />
     <ClCompile Include="Vulkan.cxx" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DebugClass.hxx" />
     <ClInclude Include="main.h" />
+    <ClInclude Include="SDLApp.hxx" />
     <ClInclude Include="SingletonsMng.hxx" />
     <ClInclude Include="Vulkan.hxx" />
   </ItemGroup>
