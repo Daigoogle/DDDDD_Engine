@@ -45,9 +45,9 @@ public:
 /// @brief シングルトンの最終処理を行うクラス
 class Supervision final
 {
-	friend class SingletonBase;
 	template<typename T>
 	friend class Singleton;
+	friend class SingletonBase;
 public:
 	/// @brief 初期化処理を行う
 	/// @return 成功したらtrue
@@ -65,6 +65,10 @@ private:
 	/// @param pSingleton 処理するシングルトン
 	/// @param order 更新順
 	static void addUpdater(SingletonBase* pSingleton, UPDATE_ORDER order);
+
+private:
+	static std::array<std::vector<SingletonBase*>, static_cast<int>(UPDATE_ORDER::LAST_UPDATE) + 1> m_Updaters;//更新処理
+	static std::vector<void(*)()> m_finalizers;//終了処理
 };
 
 /// @brief シングルトンの最終処理を行うクラス
