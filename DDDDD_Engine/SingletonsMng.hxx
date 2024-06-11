@@ -29,8 +29,11 @@ enum class UPDATE_ORDER {
 class SingletonBase
 {
 public:
+	/// @brief コンストラクタを禁止
+	SingletonBase() = delete;
 	/// @brief コンストラクタ
-	SingletonBase(UPDATE_ORDER Order = UPDATE_ORDER::NO_UPDATE);
+	SingletonBase(UPDATE_ORDER Order);
+	
 	/// @brief 初期化処理 ※オーバーライドしてください
 	virtual bool Init() = 0;
 	/// @brief 更新処理 ※オーバーライドしてください
@@ -42,10 +45,10 @@ public:
 /// @brief シングルトンの最終処理を行うクラス
 class Supervision final
 {
+	friend class SingletonBase;
+	template<typename T>
+	friend class Singleton;
 public:
-	/// @brief 終了処理の関数型
-	using Function = void(*)(); 
-
 	/// @brief 初期化処理を行う
 	/// @return 成功したらtrue
 	static bool Initialize();
@@ -54,16 +57,14 @@ public:
 	/// @brief 終了処理を行う
 	static void Finalize();
 
+private:
 	/// @brief 終了処理を追加する
 	/// @param func 終了処理
-	static void addFinalizer(Function func);
+	static void addFinalizer(void(*func)());
 	/// @brief 更新処理を追加する
 	/// @param pSingleton 処理するシングルトン
 	/// @param order 更新順
 	static void addUpdater(SingletonBase* pSingleton, UPDATE_ORDER order);
-private:
-	static std::array<std::vector<SingletonBase*>, static_cast<int>(UPDATE_ORDER::LAST_UPDATE) + 1> m_Updaters;//更新処理
-	static std::vector<Function> m_finalizers;//終了処理
 };
 
 /// @brief シングルトンの最終処理を行うクラス

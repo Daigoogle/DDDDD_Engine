@@ -15,16 +15,16 @@
       "RelativeMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|solutionrelative:DDDDD_Engine\\Supervision.cxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|C:\\DDDDD_Engine\\DDDDD_Engine\\Vulkan.cxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|solutionrelative:DDDDD_Engine\\Vulkan.cxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|C:\\DDDDD_Engine\\DDDDD_Engine\\SDLApp.cxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|solutionrelative:DDDDD_Engine\\SDLApp.cxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|C:\\DDDDD_Engine\\DDDDD_Engine\\SDLApp.hxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|solutionrelative:DDDDD_Engine\\SDLApp.hxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|C:\\DDDDD_Engine\\DDDDD_Engine\\Vulkan.cxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|solutionrelative:DDDDD_Engine\\Vulkan.cxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|C:\\DDDDD_Engine\\DDDDD_Engine\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
@@ -73,12 +73,11 @@
               "ViewState": "AQIAAAoAAAAAAAAAAAAvwCAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2024-06-09T07:24:36.61Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 5,
               "Title": "Vulkan.cxx",
               "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\Vulkan.cxx",
               "RelativeDocumentMoniker": "DDDDD_Engine\\Vulkan.cxx",
@@ -87,8 +86,7 @@
               "ViewState": "AQIAAAYAAAAAAAAAAAAAAAoAAAAXAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2024-06-09T07:40:09.356Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
@@ -101,18 +99,17 @@
               "ViewState": "AQIAACoAAAAAAAAAAAAUwD0AAAAcAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2024-06-09T07:21:39.767Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 4,
               "Title": "SDLApp.hxx",
               "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\SDLApp.hxx",
               "RelativeDocumentMoniker": "DDDDD_Engine\\SDLApp.hxx",
               "ToolTip": "C:\\DDDDD_Engine\\DDDDD_Engine\\SDLApp.hxx",
               "RelativeToolTip": "DDDDD_Engine\\SDLApp.hxx",
-              "ViewState": "AQIAAB0AAAAAAAAAAAAmwC8AAAAZAAAA",
+              "ViewState": "AQIAAB4AAAAAAAAAAAAAACoAAAApAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2024-06-10T12:51:22.448Z",
               "IsPinned": true,
@@ -120,13 +117,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 3,
               "Title": "SDLApp.cxx",
               "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\SDLApp.cxx",
               "RelativeDocumentMoniker": "DDDDD_Engine\\SDLApp.cxx",
               "ToolTip": "C:\\DDDDD_Engine\\DDDDD_Engine\\SDLApp.cxx",
               "RelativeToolTip": "DDDDD_Engine\\SDLApp.cxx",
-              "ViewState": "AQIAADAAAAAAAAAAAAAAAD0AAAAAAAAA",
+              "ViewState": "AQIAACQAAAAAAAAAAAAAADUAAAAVAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2024-06-10T13:49:46.877Z",
               "IsPinned": true,
@@ -158,8 +155,7 @@
               "RelativeToolTip": "DDDDD_Engine\\DebugClass.hxx",
               "ViewState": "AQIAAAYAAAAAAAAAAAAAABQAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-06-10T15:20:25.268Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-06-10T15:20:25.268Z"
             },
             {
               "$type": "Document",
@@ -171,8 +167,7 @@
               "RelativeToolTip": "DDDDD_Engine\\DebugClass.cxx",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAEAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2024-06-10T15:22:32.217Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-06-10T15:22:32.217Z"
             },
             {
               "$type": "Document",
@@ -197,8 +192,7 @@
               "RelativeToolTip": "..\\VulkanSDK\\1.3.283.0\\Include\\vulkan\\vulkan_funcs.hpp",
               "ViewState": "AQIAAKwBAAAAAAAAAAAcwLoBAABkAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-06-09T13:23:35.562Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-06-09T13:23:35.562Z"
             },
             {
               "$type": "Document",
@@ -220,7 +214,7 @@
               "RelativeDocumentMoniker": "DDDDD_Engine\\SingletonsMng.cxx",
               "ToolTip": "C:\\DDDDD_Engine\\DDDDD_Engine\\SingletonsMng.cxx",
               "RelativeToolTip": "DDDDD_Engine\\SingletonsMng.cxx",
-              "ViewState": "AQIAABcAAAAAAAAAAAAmwB8AAAA1AAAA",
+              "ViewState": "AQIAAB4AAAAAAAAAAAAAAAgAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2024-06-09T11:40:31.383Z",
               "EditorCaption": ""
@@ -233,7 +227,7 @@
               "RelativeDocumentMoniker": "DDDDD_Engine\\SingletonsMng.hxx",
               "ToolTip": "C:\\DDDDD_Engine\\DDDDD_Engine\\SingletonsMng.hxx",
               "RelativeToolTip": "DDDDD_Engine\\SingletonsMng.hxx",
-              "ViewState": "AQIAAEYAAAAAAAAAAAAmwFEAAAACAAAA",
+              "ViewState": "AQIAADwAAAAAAAAAAAAAAEIAAABHAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2024-06-09T11:37:20.943Z",
               "EditorCaption": ""
@@ -248,8 +242,7 @@
               "RelativeToolTip": "DDDDD_Engine\\main.h",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAQAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-06-09T11:21:21.787Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-06-09T11:21:21.787Z"
             }
           ]
         }

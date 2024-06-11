@@ -16,27 +16,31 @@
 class SDLApp: public SingletonBase
 {
 public:
+	// シングルトン化
 	SINGLETON_MAKES(SDLApp)
 
+	/// @brief コンストラクタ
 	SDLApp();
+	/// @brief デストラクタ
 	~SDLApp();
 
+	/// @brief 初期化処理
+	/// @return 成功したらtrue
 	bool Init() override;
+	/// @brief 更新処理
 	void Update() override;
+	/// @brief 終了処理
 	void UnInit();
 
 	/// @brief ウィンドウが開いているか
 	/// @return 開いているならtrue
 	bool IsRunning() { return m_stillRunning; }
-
 	/// @brief ウィンドウを取得
 	/// @return ウィンドウ
 	SDL_Window* GetWindow() { return m_Window; }
-
 	/// @brief イベントを取得
 	/// @return イベント
 	SDL_Event GetEvent() { return m_event; }
-
 	/// @brief 1フレーム当たりの時間(ミリ秒)を取得
 	/// @return 1フレーム当たりの時間(ミリ秒)
 	unsigned int DeltaTime() { return m_DeltaTime; }
