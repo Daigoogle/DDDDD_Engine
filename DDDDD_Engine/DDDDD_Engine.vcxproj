@@ -23,6 +23,7 @@
     <ProjectGuid>{34e36632-19de-457c-a18b-44dce36db6d6}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>DDDDD_Engine</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -123,6 +124,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -157,17 +159,39 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DebugClass.cxx" />
+    <ClCompile Include="GameObject.cxx" />
+    <ClCompile Include="GameObjectInst.cxx" />
+    <ClCompile Include="GameObjectMng.cxx" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Render.cxx" />
+    <ClCompile Include="RenderMgr.cxx" />
+    <ClCompile Include="SceneBase.cxx" />
+    <ClCompile Include="SceneMng.cxx" />
     <ClCompile Include="SDLApp.cxx" />
     <ClCompile Include="SingletonsMng.cxx" />
     <ClCompile Include="Supervision.cxx" />
+    <ClCompile Include="Swapchain.cxx" />
+    <ClCompile Include="Vectors.cxx" />
     <ClCompile Include="Vulkan.cxx" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Component.hxx" />
     <ClInclude Include="DebugClass.hxx" />
+    <ClInclude Include="GameObject.hxx" />
+    <ClInclude Include="GameObjectInst.hxx" />
+    <ClInclude Include="GameObjectMng.hxx" />
     <ClInclude Include="main.h" />
+    <ClInclude Include="Render.hxx" />
+    <ClInclude Include="RenderMgr.hxx" />
+    <ClInclude Include="SceneBase.hxx">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="SceneMng.hxx" />
     <ClInclude Include="SDLApp.hxx" />
     <ClInclude Include="SingletonsMng.hxx" />
+    <ClInclude Include="Swapchain.hxx" />
+    <ClInclude Include="Vectors.hxx" />
     <ClInclude Include="Vulkan.hxx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

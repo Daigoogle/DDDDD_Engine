@@ -40,8 +40,7 @@ private:
 	std::vector<const char*>	m_layers;
 	vk::ApplicationInfo			m_appInfo;
 	vk::InstanceCreateInfo		m_instInfo;
-	vk::Instance				m_instance;
-	VkSurfaceKHR				m_surface;
+	vk::UniqueInstance			m_instance;
 	vk::SurfaceKHR*				m_pSurface;
 };
 

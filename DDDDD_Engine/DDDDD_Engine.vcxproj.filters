@@ -2,57 +2,147 @@
 <!-- Copyright (c) 2015-2019 LunarG, Inc. -->
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="System">
-      <UniqueIdentifier>{f5f7cecf-647b-4cfc-9c3a-17e06d1ebfe9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Component">
       <UniqueIdentifier>{f8e90f66-3dcb-405c-b5c7-518b1d2be167}</UniqueIdentifier>
     </Filter>
     <Filter Include="Manager">
       <UniqueIdentifier>{79ecec63-9006-4266-844b-7ec3b1cb3240}</UniqueIdentifier>
     </Filter>
-    <Filter Include="System\Singletons">
-      <UniqueIdentifier>{ecdf0c61-29e8-4cce-84e5-b004fd69898d}</UniqueIdentifier>
+    <Filter Include="Base">
+      <UniqueIdentifier>{1c06270f-b4dc-4dc4-94c4-acb01b36fc3e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="System\Singletons\Dominatior">
+    <Filter Include="Core">
+      <UniqueIdentifier>{f5f7cecf-647b-4cfc-9c3a-17e06d1ebfe9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App">
+      <UniqueIdentifier>{2ad87113-fb89-424f-94ee-0633f5302d25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics">
+      <UniqueIdentifier>{4b44d148-2f7e-4ce8-84b9-118926a4c897}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Dominatior">
       <UniqueIdentifier>{30728b43-ec81-4031-8920-682937f38f71}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Audio">
+      <UniqueIdentifier>{eb6ee41a-a1f1-423d-9119-2b34fdcc76bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics">
+      <UniqueIdentifier>{c5c72e96-19c2-4550-bad6-f12875a1f0bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Input">
+      <UniqueIdentifier>{1d904d06-b3b8-46a1-9010-18885f37ed64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scripting">
+      <UniqueIdentifier>{fd7450e1-fcf4-4110-a8b5-264f7407dc83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{9f62cc8e-f7c4-4ba3-97c9-de2f8d6d2bbd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tools">
+      <UniqueIdentifier>{0a55dbb3-ae5e-4acb-814f-5cad4ae15b75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{fa49937f-bb90-4d78-bd66-d6d3958e9998}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty">
+      <UniqueIdentifier>{72474ade-3b71-44cf-af4c-fa236d9e9b92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="_Shader">
+      <UniqueIdentifier>{059a8e71-957c-4337-ad54-02602957fb1b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>System</Filter>
-    </ClCompile>
-    <ClCompile Include="Vulkan.cxx">
-      <Filter>System</Filter>
-    </ClCompile>
     <ClCompile Include="SingletonsMng.cxx">
-      <Filter>System\Singletons\Dominatior</Filter>
+      <Filter>Core\Dominatior</Filter>
     </ClCompile>
     <ClCompile Include="Supervision.cxx">
-      <Filter>System\Singletons\Dominatior</Filter>
-    </ClCompile>
-    <ClCompile Include="SDLApp.cxx">
-      <Filter>System</Filter>
+      <Filter>Core\Dominatior</Filter>
     </ClCompile>
     <ClCompile Include="DebugClass.cxx">
-      <Filter>System</Filter>
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Vulkan.cxx">
+      <Filter>App</Filter>
+    </ClCompile>
+    <ClCompile Include="SDLApp.cxx">
+      <Filter>App</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderMgr.cxx">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Render.cxx">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Swapchain.cxx">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Vectors.cxx">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneMng.cxx">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cxx">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObjectMng.cxx">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObjectInst.cxx">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneBase.cxx">
+      <Filter>Base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Vulkan.hxx">
-      <Filter>System</Filter>
-    </ClInclude>
-    <ClInclude Include="main.h">
-      <Filter>System</Filter>
-    </ClInclude>
     <ClInclude Include="SingletonsMng.hxx">
-      <Filter>System\Singletons\Dominatior</Filter>
-    </ClInclude>
-    <ClInclude Include="SDLApp.hxx">
-      <Filter>System</Filter>
+      <Filter>Core\Dominatior</Filter>
     </ClInclude>
     <ClInclude Include="DebugClass.hxx">
-      <Filter>System</Filter>
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="main.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Vulkan.hxx">
+      <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="SDLApp.hxx">
+      <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderMgr.hxx">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Render.hxx">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Swapchain.hxx">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Vectors.hxx">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneMng.hxx">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneBase.hxx">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.hxx">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.hxx">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObjectMng.hxx">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObjectInst.hxx">
+      <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

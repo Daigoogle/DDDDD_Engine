@@ -33,15 +33,15 @@ Create and destroy a Vulkan surface on an SDL window.
 
 // Tell SDL not to mess with main()
 #define SDL_MAIN_HANDLED
-
 #include <glm/glm.hpp>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_syswm.h>
 #include <SDL2/SDL_vulkan.h>
 #include <vulkan/vulkan.hpp>
 
-#include <iostream>
-#include <vector>
+#ifdef _DEBUG
+#include <crtdbg.h>
+#endif // _DEBUG
 
 #include "SingletonsMng.hxx"
 #include "SDLApp.hxx"
@@ -49,6 +49,10 @@ Create and destroy a Vulkan surface on an SDL window.
 
 int main()
 {
+#ifdef _DEBUG
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif // _DEBUG
+
     // SDLèâä˙âª ...é∏îsÇ»ÇÁèIóπ
     if (!Supervision::Initialize())
         return 1;

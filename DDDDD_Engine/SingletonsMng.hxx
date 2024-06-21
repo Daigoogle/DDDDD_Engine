@@ -14,7 +14,7 @@
 #include <mutex>
 
 // =-=-= マクロ定義部 =-=-=
-#define SINGLETON_MAKES(Type) Type(const Type&) = delete;Type& operator=(const Type&) = delete;Type(Type&&) = delete;Type& operator=(Type&&) = delete;static Type& GetInstance(){return Singleton<Type>::GetInstance();} 
+#define SINGLETON_MAKES(Type) Type(const Type&) = delete;Type& operator=(const Type&) = delete;Type(Type&&) = delete;Type& operator=(Type&&) = delete;static Type& GetInstance(){return _Singleton<Type>::GetInstance();} 
 
 // =-=-= 定数定義部 =-=-=
 enum class UPDATE_ORDER {
@@ -46,14 +46,16 @@ public:
 class Supervision final
 {
 	template<typename T>
-	friend class Singleton;
-	friend class SingletonBase;
+	friend class _Singleton;
+	friend SingletonBase::SingletonBase(UPDATE_ORDER Order);
 public:
 	/// @brief 初期化処理を行う
 	/// @return 成功したらtrue
 	static bool Initialize();
 	/// @brief 更新処理を行う
 	static void Updater();
+	/// @brief 描画処理を行う
+	static void Drawing();
 	/// @brief 終了処理を行う
 	static void Finalize();
 
@@ -71,10 +73,10 @@ private:
 	static std::vector<void(*)()> m_finalizers;//終了処理
 };
 
-/// @brief シングルトンの最終処理を行うクラス
+/// @brief シングルトンのインスタンスを生成・保持するクラス
 /// @tparam Type シングルトンの型
 template<typename Type>
-class Singleton final
+class _Singleton final
 {
 public:
 	/// @brief インスタンスを取得する
@@ -90,7 +92,7 @@ private:
 	static void Create()
 	{
 		instance = new Type;
-		Supervision::addFinalizer(&Singleton<Type>::destroy);
+		Supervision::addFinalizer(&_Singleton<Type>::destroy);
 	}
 
 	/// @brief インスタンスを破棄する
@@ -105,7 +107,7 @@ private:
 };
 
 //	静的メンバを定義
-template <typename Type> std::once_flag Singleton<Type>::initFlag;
-template <typename Type> Type* Singleton<Type>::instance = nullptr;
+template <typename Type> std::once_flag _Singleton<Type>::initFlag;
+template <typename Type> Type* _Singleton<Type>::instance = nullptr;
 
 #endif // !_____SingletonsMng_HXX_____

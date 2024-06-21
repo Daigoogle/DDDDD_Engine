@@ -2,6 +2,7 @@
 
 #include "SDLApp.hxx"
 #include "Vulkan.hxx"
+#include "SceneMng.hxx"
 
 #include "DebugClass.hxx" 
 
@@ -12,8 +13,16 @@ bool Supervision::Initialize()
 	// ‰Šú‰»ˆ—‚Í‚±‚Ì’†‚Ö
 	if(	SDLApp::GetInstance().Init() 
 		&& Vulkan::GetInstance().Init() 
+		&& SceneMng::GetInstance().Init()
 		&& DebugClass::GetInstance().Init()
 	)
 		return true;
 	return false;
+}
+
+/// @brief •`‰æˆ—‚ğs‚¤
+void Supervision::Drawing()
+{
+	// •`‰æˆ—‚Í‚±‚Ì’†‚Ö
+
 }

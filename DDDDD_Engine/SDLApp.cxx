@@ -4,6 +4,8 @@
 
 SDLApp::SDLApp()
     :SingletonBase(UPDATE_ORDER::FIRST_UPDATE)
+    ,m_Window(nullptr)
+    ,m_event()
 	,m_stillRunning(true)
 	,m_DeltaTime(0)
     ,m_lastTime(0)
@@ -24,7 +26,7 @@ bool SDLApp::Init()
         return false;
     }
     m_Window = SDL_CreateWindow("Vulkan Window", SDL_WINDOWPOS_CENTERED,
-        SDL_WINDOWPOS_CENTERED, 1280, 720, SDL_WINDOW_VULKAN);
+        SDL_WINDOWPOS_CENTERED, m_WindowWidth, m_WindowHeight, SDL_WINDOW_VULKAN);
     if (m_Window == NULL) {
         std::cout << "Could not create SDL window." << std::endl;
         return false;
@@ -59,5 +61,6 @@ void SDLApp::Update()
 
 void SDLApp::UnInit()
 {
-
+    SDL_DestroyWindow(m_Window);    // ウィンドウの破棄
+    SDL_Quit(); // SDLの終了
 }
