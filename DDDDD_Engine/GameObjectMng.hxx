@@ -9,6 +9,7 @@
 #define _____GameObjectMng_HXX_____
 
 // =-=-= インクルード部 =-=-=
+#include <memory>
 #include <queue>
 #include <map>
 
@@ -30,14 +31,14 @@ public:
 	void Update() override;
 
 	void InitObjects();
-	void UpdateObjects();
-	void DeleteObjects();
+	void UpdateObjects(SceneBase* pScene);
+	void DeleteObjects(SceneBase* pScene);
 
 	GameObject MakeObject(SceneBase* pScene);
 
 private:
-	std::map<type_info ,std::queue<GameObjectInst*>> m_ObjectsLoadQueue;
-	std::map<type_info ,std::queue<GameObjectInst*>> m_ObjectsQueue;
+	std::map<SceneBase* ,std::queue<std::unique_ptr<GameObjectInst>>> m_ObjectsLoadQueue;
+	std::map<SceneBase* ,std::queue<std::unique_ptr<GameObjectInst>>> m_ObjectsQueue;
 	unsigned __int64 m_LastObjectID;
 };
 

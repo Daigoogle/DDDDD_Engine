@@ -15,8 +15,8 @@ class GameObject;
 class SceneBase
 {
 public:
-	SceneBase() {};
-	virtual ~SceneBase() {};
+	SceneBase() {}
+	virtual ~SceneBase();
 
 	virtual bool Init() = 0;
 	virtual void Update() = 0;

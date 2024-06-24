@@ -3,12 +3,20 @@
   "WorkspaceRootPath": "C:\\DDDDD_Engine\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|C:\\DDDDD_Engine\\DDDDD_Engine\\GameObjectInst.hxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|solutionrelative:DDDDD_Engine\\GameObjectInst.hxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|C:\\DDDDD_Engine\\DDDDD_Engine\\SceneMng.hxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|solutionrelative:DDDDD_Engine\\SceneMng.hxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|C:\\DDDDD_Engine\\DDDDD_Engine\\GameObjectInst.cxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|solutionrelative:DDDDD_Engine\\GameObjectInst.cxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|C:\\DDDDD_Engine\\DDDDD_Engine\\GameObject.hxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|solutionrelative:DDDDD_Engine\\GameObject.hxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|C:\\DDDDD_Engine\\DDDDD_Engine\\GameObject.cxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|solutionrelative:DDDDD_Engine\\GameObject.cxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|C:\\DDDDD_Engine\\DDDDD_Engine\\SceneMng.cxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|solutionrelative:DDDDD_Engine\\SceneMng.cxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|C:\\DDDDD_Engine\\DDDDD_Engine\\GameObjectMng.cxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
@@ -19,12 +27,24 @@
       "RelativeMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|solutionrelative:DDDDD_Engine\\GameObjectMng.hxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|C:\\DDDDD_Engine\\DDDDD_Engine\\GameObjectInst.cxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|solutionrelative:DDDDD_Engine\\GameObjectInst.cxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|C:\\DDDDD_Engine\\DDDDD_Engine\\SceneBase.cxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|solutionrelative:DDDDD_Engine\\SceneBase.cxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|C:\\DDDDD_Engine\\DDDDD_Engine\\SceneBase.hxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|solutionrelative:DDDDD_Engine\\SceneBase.hxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|C:\\DDDDD_Engine\\DDDDD_Engine\\GameObjectInst.hxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|solutionrelative:DDDDD_Engine\\GameObjectInst.hxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|C:\\DDDDD_Engine\\DDDDD_Engine\\Component.hxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|solutionrelative:DDDDD_Engine\\Component.hxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|C:\\DDDDD_Engine\\DDDDD_Engine\\Supervision.cxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
@@ -37,22 +57,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|C:\\DDDDD_Engine\\DDDDD_Engine\\SingletonsMng.hxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|solutionrelative:DDDDD_Engine\\SingletonsMng.hxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|C:\\DDDDD_Engine\\DDDDD_Engine\\GameObject.hxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|solutionrelative:DDDDD_Engine\\GameObject.hxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|C:\\DDDDD_Engine\\DDDDD_Engine\\SceneMng.hxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|solutionrelative:DDDDD_Engine\\SceneMng.hxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|C:\\DDDDD_Engine\\DDDDD_Engine\\Component.hxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|solutionrelative:DDDDD_Engine\\Component.hxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|C:\\DDDDD_Engine\\DDDDD_Engine\\SceneMng.cxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|solutionrelative:DDDDD_Engine\\SceneMng.cxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|C:\\DDDDD_Engine\\DDDDD_Engine\\Vulkan.cxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
@@ -127,11 +131,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 6,
+          "SelectedChildIndex": 8,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 15,
               "Title": "Vulkan.hxx",
               "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\Vulkan.hxx",
               "RelativeDocumentMoniker": "DDDDD_Engine\\Vulkan.hxx",
@@ -144,7 +148,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 14,
               "Title": "Vulkan.cxx",
               "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\Vulkan.cxx",
               "RelativeDocumentMoniker": "DDDDD_Engine\\Vulkan.cxx",
@@ -157,98 +161,108 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
-              "Title": "SDLApp.hxx",
-              "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\SDLApp.hxx",
-              "RelativeDocumentMoniker": "DDDDD_Engine\\SDLApp.hxx",
-              "ToolTip": "C:\\DDDDD_Engine\\DDDDD_Engine\\SDLApp.hxx",
-              "RelativeToolTip": "DDDDD_Engine\\SDLApp.hxx",
-              "ViewState": "AQIAABsAAAAAAAAAAAAhwBUAAAATAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-06-10T12:51:22.448Z",
-              "IsPinned": true
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 18,
-              "Title": "SDLApp.cxx",
-              "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\SDLApp.cxx",
-              "RelativeDocumentMoniker": "DDDDD_Engine\\SDLApp.cxx",
-              "ToolTip": "C:\\DDDDD_Engine\\DDDDD_Engine\\SDLApp.cxx",
-              "RelativeToolTip": "DDDDD_Engine\\SDLApp.cxx",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAUAAAAPAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2024-06-10T13:49:46.877Z",
-              "IsPinned": true
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 5,
               "Title": "GameObjectMng.hxx",
               "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\GameObjectMng.hxx",
               "RelativeDocumentMoniker": "DDDDD_Engine\\GameObjectMng.hxx",
               "ToolTip": "C:\\DDDDD_Engine\\DDDDD_Engine\\GameObjectMng.hxx",
               "RelativeToolTip": "DDDDD_Engine\\GameObjectMng.hxx",
-              "ViewState": "AQIAABkAAAAAAAAAAAAAACQAAAAAAAAA",
+              "ViewState": "AQIAABkAAAAAAAAAAAAAACsAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2024-06-16T02:24:35.743Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "GameObjectMng.cxx",
               "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\GameObjectMng.cxx",
               "RelativeDocumentMoniker": "DDDDD_Engine\\GameObjectMng.cxx",
               "ToolTip": "C:\\DDDDD_Engine\\DDDDD_Engine\\GameObjectMng.cxx",
               "RelativeToolTip": "DDDDD_Engine\\GameObjectMng.cxx",
-              "ViewState": "AQIAAAcAAAAAAAAAAAAhwCsAAABAAAAA",
+              "ViewState": "AQIAAAMAAAAAAAAAAAAAAAgAAAAUAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2024-06-16T03:50:42.898Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 9,
               "Title": "GameObjectInst.hxx",
               "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\GameObjectInst.hxx",
               "RelativeDocumentMoniker": "DDDDD_Engine\\GameObjectInst.hxx",
               "ToolTip": "C:\\DDDDD_Engine\\DDDDD_Engine\\GameObjectInst.hxx",
               "RelativeToolTip": "DDDDD_Engine\\GameObjectInst.hxx",
-              "ViewState": "AQIAAA0AAAAAAAAAAAAnwCEAAAAAAAAA",
+              "ViewState": "AQIAAA0AAAAAAAAAAAAnwDYAAAAeAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2024-06-16T02:52:00.388Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 6,
               "Title": "GameObjectInst.cxx",
               "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\GameObjectInst.cxx",
               "RelativeDocumentMoniker": "DDDDD_Engine\\GameObjectInst.cxx",
               "ToolTip": "C:\\DDDDD_Engine\\DDDDD_Engine\\GameObjectInst.cxx",
               "RelativeToolTip": "DDDDD_Engine\\GameObjectInst.cxx",
-              "ViewState": "AQIAAAIAAAAAAAAAAAAhwB4AAAAAAAAA",
+              "ViewState": "AQIAAAIAAAAAAAAAAAAhwBEAAAARAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2024-06-21T05:18:27.643Z",
+              "IsPinned": true
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "GameObject.hxx",
+              "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\GameObject.hxx",
+              "RelativeDocumentMoniker": "DDDDD_Engine\\GameObject.hxx",
+              "ToolTip": "C:\\DDDDD_Engine\\DDDDD_Engine\\GameObject.hxx",
+              "RelativeToolTip": "DDDDD_Engine\\GameObject.hxx",
+              "ViewState": "AQIAABAAAAAAAAAAAAAhwB4AAAASAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2024-06-16T02:24:03.743Z",
+              "IsPinned": true
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "GameObject.cxx",
+              "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\GameObject.cxx",
+              "RelativeDocumentMoniker": "DDDDD_Engine\\GameObject.cxx",
+              "ToolTip": "C:\\DDDDD_Engine\\DDDDD_Engine\\GameObject.cxx",
+              "RelativeToolTip": "DDDDD_Engine\\GameObject.cxx",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAYAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-06-22T05:49:46.811Z",
+              "IsPinned": true
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "SceneMng.hxx",
+              "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\SceneMng.hxx",
+              "RelativeDocumentMoniker": "DDDDD_Engine\\SceneMng.hxx",
+              "ToolTip": "C:\\DDDDD_Engine\\DDDDD_Engine\\SceneMng.hxx",
+              "RelativeToolTip": "DDDDD_Engine\\SceneMng.hxx",
+              "ViewState": "AQIAABUAAAAAAAAAAAAAABwAAAAUAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2024-06-14T14:52:43.569Z",
               "IsPinned": true,
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "SceneBase.cxx",
-              "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\SceneBase.cxx",
-              "RelativeDocumentMoniker": "DDDDD_Engine\\SceneBase.cxx",
-              "ToolTip": "C:\\DDDDD_Engine\\DDDDD_Engine\\SceneBase.cxx",
-              "RelativeToolTip": "DDDDD_Engine\\SceneBase.cxx",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAQAAAAAAAAA",
+              "DocumentIndex": 3,
+              "Title": "SceneMng.cxx",
+              "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\SceneMng.cxx",
+              "RelativeDocumentMoniker": "DDDDD_Engine\\SceneMng.cxx",
+              "ToolTip": "C:\\DDDDD_Engine\\DDDDD_Engine\\SceneMng.cxx",
+              "RelativeToolTip": "DDDDD_Engine\\SceneMng.cxx",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABcAAAASAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2024-06-21T03:48:07.674Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-06-14T15:53:04.749Z",
+              "IsPinned": true
             },
             {
               "$type": "Bookmark",
@@ -268,43 +282,55 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "GameObject.hxx",
-              "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\GameObject.hxx",
-              "RelativeDocumentMoniker": "DDDDD_Engine\\GameObject.hxx",
-              "ToolTip": "C:\\DDDDD_Engine\\DDDDD_Engine\\GameObject.hxx",
-              "RelativeToolTip": "DDDDD_Engine\\GameObject.hxx",
-              "ViewState": "AQIAAAYAAAAAAAAAAAAAABUAAAACAAAA",
+              "DocumentIndex": 19,
+              "Title": "SDLApp.cxx",
+              "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\SDLApp.cxx",
+              "RelativeDocumentMoniker": "DDDDD_Engine\\SDLApp.cxx",
+              "ToolTip": "C:\\DDDDD_Engine\\DDDDD_Engine\\SDLApp.cxx",
+              "RelativeToolTip": "DDDDD_Engine\\SDLApp.cxx",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAUAAAAPAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-06-10T13:49:46.877Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "SDLApp.hxx",
+              "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\SDLApp.hxx",
+              "RelativeDocumentMoniker": "DDDDD_Engine\\SDLApp.hxx",
+              "ToolTip": "C:\\DDDDD_Engine\\DDDDD_Engine\\SDLApp.hxx",
+              "RelativeToolTip": "DDDDD_Engine\\SDLApp.hxx",
+              "ViewState": "AQIAABsAAAAAAAAAAAAhwBUAAAATAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-06-16T02:24:03.743Z"
+              "WhenOpened": "2024-06-10T12:51:22.448Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "SceneBase.cxx",
+              "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\SceneBase.cxx",
+              "RelativeDocumentMoniker": "DDDDD_Engine\\SceneBase.cxx",
+              "ToolTip": "C:\\DDDDD_Engine\\DDDDD_Engine\\SceneBase.cxx",
+              "RelativeToolTip": "DDDDD_Engine\\SceneBase.cxx",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAEAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-06-21T03:48:07.674Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 10,
-              "Title": "SceneMng.hxx",
-              "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\SceneMng.hxx",
-              "RelativeDocumentMoniker": "DDDDD_Engine\\SceneMng.hxx",
-              "ToolTip": "C:\\DDDDD_Engine\\DDDDD_Engine\\SceneMng.hxx",
-              "RelativeToolTip": "DDDDD_Engine\\SceneMng.hxx",
-              "ViewState": "AQIAABUAAAAAAAAAAAAAAB4AAAAIAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-06-14T14:52:43.569Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
               "Title": "Component.hxx",
               "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\Component.hxx",
               "RelativeDocumentMoniker": "DDDDD_Engine\\Component.hxx",
               "ToolTip": "C:\\DDDDD_Engine\\DDDDD_Engine\\Component.hxx",
               "RelativeToolTip": "DDDDD_Engine\\Component.hxx",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAABIAAAAAAAAA",
+              "ViewState": "AQIAAAMAAAAAAAAAAAAIwBsAAAAbAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2024-06-16T00:43:49.661Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 29,
+              "DocumentIndex": 30,
               "Title": "filesystem",
               "DocumentMoniker": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.40.33807\\include\\filesystem",
               "RelativeDocumentMoniker": "..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.40.33807\\include\\filesystem",
@@ -316,32 +342,19 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "SceneMng.cxx",
-              "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\SceneMng.cxx",
-              "RelativeDocumentMoniker": "DDDDD_Engine\\SceneMng.cxx",
-              "ToolTip": "C:\\DDDDD_Engine\\DDDDD_Engine\\SceneMng.cxx",
-              "RelativeToolTip": "DDDDD_Engine\\SceneMng.cxx",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAkAAAABAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2024-06-14T15:53:04.749Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 8,
               "Title": "SceneBase.hxx",
               "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\SceneBase.hxx",
               "RelativeDocumentMoniker": "DDDDD_Engine\\SceneBase.hxx",
               "ToolTip": "C:\\DDDDD_Engine\\DDDDD_Engine\\SceneBase.hxx",
               "RelativeToolTip": "DDDDD_Engine\\SceneBase.hxx",
-              "ViewState": "AQIAAAYAAAAAAAAAAAAAABgAAAALAAAA",
+              "ViewState": "AQIAAAYAAAAAAAAAAAAAABEAAAAPAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-06-14T15:04:51.523Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-06-14T15:04:51.523Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 27,
+              "DocumentIndex": 28,
               "Title": "vulkan.hpp",
               "DocumentMoniker": "C:\\VulkanSDK\\1.3.283.0\\Include\\vulkan\\vulkan.hpp",
               "RelativeDocumentMoniker": "..\\VulkanSDK\\1.3.283.0\\Include\\vulkan\\vulkan.hpp",
@@ -353,7 +366,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 19,
+              "DocumentIndex": 20,
               "Title": "Vectors.cxx",
               "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\Vectors.cxx",
               "RelativeDocumentMoniker": "DDDDD_Engine\\Vectors.cxx",
@@ -365,7 +378,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 22,
+              "DocumentIndex": 23,
               "Title": "Vectors.hxx",
               "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\Vectors.hxx",
               "RelativeDocumentMoniker": "DDDDD_Engine\\Vectors.hxx",
@@ -377,7 +390,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 12,
               "Title": "main.cpp",
               "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\main.cpp",
               "RelativeDocumentMoniker": "DDDDD_Engine\\main.cpp",
@@ -389,7 +402,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 28,
+              "DocumentIndex": 29,
               "Title": "optional",
               "DocumentMoniker": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.40.33807\\include\\optional",
               "RelativeDocumentMoniker": "..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.40.33807\\include\\optional",
@@ -401,7 +414,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 25,
+              "DocumentIndex": 26,
               "Title": "RenderMgr.cxx",
               "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\RenderMgr.cxx",
               "RelativeDocumentMoniker": "DDDDD_Engine\\RenderMgr.cxx",
@@ -413,7 +426,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 26,
+              "DocumentIndex": 27,
               "Title": "Render.cxx",
               "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\Render.cxx",
               "RelativeDocumentMoniker": "DDDDD_Engine\\Render.cxx",
@@ -425,7 +438,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 24,
+              "DocumentIndex": 25,
               "Title": "Render.hxx",
               "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\Render.hxx",
               "RelativeDocumentMoniker": "DDDDD_Engine\\Render.hxx",
@@ -437,7 +450,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 23,
+              "DocumentIndex": 24,
               "Title": "RenderMgr.hxx",
               "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\RenderMgr.hxx",
               "RelativeDocumentMoniker": "DDDDD_Engine\\RenderMgr.hxx",
@@ -449,7 +462,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 17,
               "Title": "DebugClass.hxx",
               "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\DebugClass.hxx",
               "RelativeDocumentMoniker": "DDDDD_Engine\\DebugClass.hxx",
@@ -461,7 +474,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 16,
               "Title": "DebugClass.cxx",
               "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\DebugClass.cxx",
               "RelativeDocumentMoniker": "DDDDD_Engine\\DebugClass.cxx",
@@ -473,7 +486,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 11,
               "Title": "Supervision.cxx",
               "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\Supervision.cxx",
               "RelativeDocumentMoniker": "DDDDD_Engine\\Supervision.cxx",
@@ -485,7 +498,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 18,
               "Title": "SingletonsMng.cxx",
               "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\SingletonsMng.cxx",
               "RelativeDocumentMoniker": "DDDDD_Engine\\SingletonsMng.cxx",
@@ -497,7 +510,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 13,
               "Title": "SingletonsMng.hxx",
               "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\SingletonsMng.hxx",
               "RelativeDocumentMoniker": "DDDDD_Engine\\SingletonsMng.hxx",
@@ -509,7 +522,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 21,
+              "DocumentIndex": 22,
               "Title": "main.h",
               "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\main.h",
               "RelativeDocumentMoniker": "DDDDD_Engine\\main.h",

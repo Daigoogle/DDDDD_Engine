@@ -32,7 +32,6 @@ public:
 
 	const bool IsActive();
 
-
 	template<typename TypeComp>
 	TypeComp* AddComponent()
 	{

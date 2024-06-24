@@ -11,19 +11,7 @@ SceneMng::SceneMng()
 
 SceneMng::~SceneMng()
 {
-	if (m_NextScene){
-		delete m_NextScene;
-		m_NextScene = nullptr;
-	}
-	if(m_LoadScene){
-		delete m_LoadScene;
-		m_LoadScene = nullptr;
-	}
-	if (m_NowScene){
-		m_NowScene->UnInit();
-		delete m_NowScene;
-		m_NowScene = nullptr;
-	}
+
 }
 
 bool SceneMng::Init()

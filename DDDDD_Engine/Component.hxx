@@ -14,8 +14,8 @@
 class Component
 {
 public:
-	Component();
-	virtual ~Component();
+	Component() {}
+	virtual ~Component() {}
 
 	virtual bool Init() = 0;
 	virtual void Update() = 0;

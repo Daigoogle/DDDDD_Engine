@@ -15,7 +15,7 @@ GameObjectInst::GameObjectInst()
 GameObjectInst::~GameObjectInst()
 {
 	for (auto& elem:m_Components)
-		delete elem;
+		elem.release();
 }
 
 bool GameObjectInst::Init()
@@ -28,5 +28,13 @@ bool GameObjectInst::Init()
 
 void GameObjectInst::Update()
 {
+	if (!IsActive())
+		return;
+	for (auto& elem : m_Components)
+		elem->Update();// XV
+}
 
+const bool GameObjectInst::IsActive()
+{
+	return m_IsActive && (m_pParent ? m_pParent->IsActive() : true);
 }
