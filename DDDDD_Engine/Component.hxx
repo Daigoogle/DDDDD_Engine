@@ -10,6 +10,7 @@
 
 // =-=-= インクルード部 =-=-=
 
+class GameObjectInst;
 
 class Component
 {
@@ -19,10 +20,6 @@ public:
 
 	virtual bool Init() = 0;
 	virtual void Update() = 0;
-	virtual void UnInit() = 0;
-
-private:
-
 };
 
 #endif // !_____Component_HXX_____

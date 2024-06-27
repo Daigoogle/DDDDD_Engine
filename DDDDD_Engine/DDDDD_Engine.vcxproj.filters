@@ -50,6 +50,9 @@
     <Filter Include="_Shader">
       <UniqueIdentifier>{059a8e71-957c-4337-ad54-02602957fb1b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{5f93fb6a-4115-48c3-b21c-ff62652fa5ed}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SingletonsMng.cxx">
@@ -97,6 +100,12 @@
     <ClCompile Include="SceneBase.cxx">
       <Filter>Base</Filter>
     </ClCompile>
+    <ClCompile Include="TitleScene.cxx">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraComp.cxx">
+      <Filter>Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SingletonsMng.hxx">
@@ -143,6 +152,12 @@
     </ClInclude>
     <ClInclude Include="GameObjectInst.hxx">
       <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="TitleScene.hxx">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraComp.hxx">
+      <Filter>Component</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

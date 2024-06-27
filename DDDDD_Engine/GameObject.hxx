@@ -43,18 +43,39 @@ public:
 		return m_pInstance->GetComponent<TypeComp>();
 	}
 
+	/// @brief 子オブジェクトを追加
+	/// @param pChild 追加する子オブジェクト
 	void AddChild(GameObject& pChild);
+	/// @brief 子オブジェクトを分離
+	/// @param pChild 分離する子オブジェクト
 	void RemoveChild(GameObject& pChild);
 
+	/// @brief 有効かどうか
+	/// @return 有効ならtrue
 	const bool IsActive();
+	/// @brief 有効かどうかを設定
+	/// @param isActive 有効にするならtrue
 	void SetActive(bool isActive);
+	/// @brief IDの取得
+	/// @return ID
 	const unsigned __int64 GetID();
-	void SetID(unsigned __int64 id);
+	/// @brief 名前の設定
+	/// @param name 設定する名前
 	void SetName(const std::string& name);
+	/// @brief 名前の取得
+	/// @return 名前
 	const std::string& GetName();
+	/// @brief 親オブジェクトの取得
+	/// @return 親オブジェクト
 	GameObject GetParent();
+	/// @brief タグの取得
+	/// @return タグ
 	unsigned GetTag();
+	/// @brief タグの設定
+	/// @param tag 設定するタグ
 	void SetTag(unsigned tag);
+	/// @brief シーンの取得
+	/// @return シーン
 	SceneBase* GetScene();
 private:
 	GameObjectInst* m_pInstance;// 実体

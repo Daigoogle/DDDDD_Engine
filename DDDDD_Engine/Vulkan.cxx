@@ -1,12 +1,11 @@
 #include "Vulkan.hxx"
-
 #include <SDL2/SDL_vulkan.h>
 #include <SDL2/SDL_syswm.h>
 #include <iostream>
 #include <fstream>
-#include <filesystem>
 #include <vulkan/vulkan.h>
 #include "SDLApp.hxx"
+
 
 Vulkan::Vulkan()
     : SingletonBase(UPDATE_ORDER::NO_UPDATE)
@@ -274,6 +273,56 @@ bool Vulkan::Init()
 
     vk::UniquePipelineLayout pipelineLayout = device->createPipelineLayoutUnique(layoutCreateInfo);
 
+
+
+
+    size_t vertSpvFileSz;// = std::filesystem::file_size("Assets/Shader/shader.vert.spv");
+    
+    std::ifstream vertSpvFile("Assets/Shader/shader.vert.spv", std::ios_base::binary | std::ifstream::ate);
+    if (!vertSpvFile.is_open()) {
+        std::cerr << "ファイルが開けませんでした。" << std::endl;
+        return false;
+    }
+
+    vertSpvFileSz = static_cast<size_t>(vertSpvFile.tellg());
+    vertSpvFile.seekg(0, std::ios_base::beg);
+    std::vector<char> vertSpvFileData(vertSpvFileSz);
+    vertSpvFile.read(vertSpvFileData.data(), vertSpvFileSz);
+
+    vk::ShaderModuleCreateInfo vertShaderCreateInfo;
+    vertShaderCreateInfo.codeSize = vertSpvFileSz;
+    vertShaderCreateInfo.pCode = reinterpret_cast<const uint32_t*>(vertSpvFileData.data());
+
+    vk::UniqueShaderModule vertShader = device->createShaderModuleUnique(vertShaderCreateInfo);
+
+    size_t fragSpvFileSz;// = std::filesystem::file_size("Assets/Shader/shader.frag.spv");
+
+    std::ifstream fragSpvFile("Assets/Shader/shader.frag.spv", std::ios_base::binary | std::ifstream::ate);
+    if(!fragSpvFile.is_open()){
+		std::cerr << "ファイルが開けませんでした。" << std::endl;
+		return false;
+	}
+
+    fragSpvFileSz = static_cast<size_t>(fragSpvFile.tellg());
+    fragSpvFile.seekg(0, std::ifstream::beg);
+    std::vector<char> fragSpvFileData(fragSpvFileSz);
+    fragSpvFile.read(fragSpvFileData.data(), fragSpvFileSz);
+
+    vk::ShaderModuleCreateInfo fragShaderCreateInfo;
+    fragShaderCreateInfo.codeSize = fragSpvFileSz;
+    fragShaderCreateInfo.pCode = reinterpret_cast<const uint32_t*>(fragSpvFileData.data());
+
+    vk::UniqueShaderModule fragShader = device->createShaderModuleUnique(fragShaderCreateInfo);
+
+    vk::PipelineShaderStageCreateInfo shaderStage[2];
+
+    shaderStage[0].stage = vk::ShaderStageFlagBits::eVertex;
+    shaderStage[0].module = vertShader.get();
+    shaderStage[0].pName = "main";
+    shaderStage[1].stage = vk::ShaderStageFlagBits::eFragment;
+    shaderStage[1].module = fragShader.get();
+    shaderStage[1].pName = "main";
+
     vk::GraphicsPipelineCreateInfo pipelineCreateInfo;
     pipelineCreateInfo.pViewportState = &viewportState;
     pipelineCreateInfo.pVertexInputState = &vertexInputInfo;
@@ -282,8 +331,8 @@ bool Vulkan::Init()
     pipelineCreateInfo.pMultisampleState = &multisample;
     pipelineCreateInfo.pColorBlendState = &blend;
     pipelineCreateInfo.layout = pipelineLayout.get();
-    pipelineCreateInfo.stageCount = 0;
-    pipelineCreateInfo.pStages = nullptr;
+    pipelineCreateInfo.stageCount = 2;
+    pipelineCreateInfo.pStages = shaderStage;
     pipelineCreateInfo.renderPass = renderpass.get();
     pipelineCreateInfo.subpass = 0;
 
@@ -291,10 +340,61 @@ bool Vulkan::Init()
 
 
 
+    vk::ImageViewCreateInfo imgViewCreateInfo;
+    imgViewCreateInfo.image = image.get();
+    imgViewCreateInfo.viewType = vk::ImageViewType::e2D;
+    imgViewCreateInfo.format = vk::Format::eR8G8B8A8Unorm;
+    imgViewCreateInfo.components.r = vk::ComponentSwizzle::eIdentity;
+    imgViewCreateInfo.components.g = vk::ComponentSwizzle::eIdentity;
+    imgViewCreateInfo.components.b = vk::ComponentSwizzle::eIdentity;
+    imgViewCreateInfo.components.a = vk::ComponentSwizzle::eIdentity;
+    imgViewCreateInfo.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
+    imgViewCreateInfo.subresourceRange.baseMipLevel = 0;
+    imgViewCreateInfo.subresourceRange.levelCount = 1;
+    imgViewCreateInfo.subresourceRange.baseArrayLayer = 0;
+    imgViewCreateInfo.subresourceRange.layerCount = 1;
+
+    vk::UniqueImageView imgView = device->createImageViewUnique(imgViewCreateInfo);
+
+    vk::ImageView frameBufferAttachments[1];
+    frameBufferAttachments[0] = imgView.get();
+
+    vk::FramebufferCreateInfo frameBufCreateInfo;
+    frameBufCreateInfo.width = screenWidth;
+    frameBufCreateInfo.height = screenHeight;
+    frameBufCreateInfo.layers = 1;
+    frameBufCreateInfo.attachmentCount = 1;
+    frameBufCreateInfo.pAttachments = frameBufferAttachments;
+    frameBufCreateInfo.renderPass = renderpass.get();
+
+    vk::UniqueFramebuffer frameBuf = device->createFramebufferUnique(frameBufCreateInfo);
+
 
 
     vk::CommandBufferBeginInfo cmdBeginInfo;
     cmdBufs[0]->begin(cmdBeginInfo);
+
+    vk::ClearValue clearValues[1];
+    clearValues[0].color.float32[0] = 0.0f;
+    clearValues[0].color.float32[1] = 0.0f;
+    clearValues[0].color.float32[2] = 1.0f;
+    clearValues[0].color.float32[3] = 1.0f;
+
+
+    vk::RenderPassBeginInfo renderpassBeginInfo;
+    renderpassBeginInfo.renderPass = renderpass.get();
+    renderpassBeginInfo.framebuffer = frameBuf.get();
+    renderpassBeginInfo.renderArea = vk::Rect2D({0, 0}, vk::Extent2D(screenWidth, screenHeight));
+    renderpassBeginInfo.clearValueCount = 0;
+    renderpassBeginInfo.pClearValues = clearValues;
+
+    cmdBufs[0]->beginRenderPass(renderpassBeginInfo,vk::SubpassContents::eInline);
+
+    cmdBufs[0]->bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline.get());
+    cmdBufs[0]->draw(3, 1, 0, 0);
+
+    cmdBufs[0]->endRenderPass();
+
 
     // コマンドを記録
 

@@ -4,7 +4,7 @@ SceneMng::SceneMng()
 	: SingletonBase(UPDATE_ORDER::SECOND_UPDATE)
 	, m_NowScene(nullptr)
 	, m_NextScene(nullptr)
-	, m_LoadScene(nullptr)
+	, m_LoadScenes()
 {
 
 }
@@ -22,11 +22,8 @@ bool SceneMng::Init()
 void SceneMng::Update()
 {
 	if (m_NextScene){
-		m_NowScene->UnInit();
-		delete m_NowScene;
-		m_NowScene = m_NextScene;
-		m_NowScene->Init();
-		m_NextScene = nullptr;
+		m_NowScene.release();
+		m_NowScene = std::move(m_NextScene);
 	}
 	if(m_NowScene)
 		m_NowScene->Update();

@@ -14,8 +14,9 @@ GameObjectInst::GameObjectInst()
 
 GameObjectInst::~GameObjectInst()
 {
-	for (auto& elem:m_Components)
-		elem.release();
+	//for (auto& elem:m_Components)
+	//	elem.release();
+	m_Components.clear();
 }
 
 bool GameObjectInst::Init()

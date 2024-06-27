@@ -3,6 +3,7 @@
 #include "SDLApp.hxx"
 #include "Vulkan.hxx"
 #include "SceneMng.hxx"
+#include "GameObjectMng.hxx"
 
 #include "DebugClass.hxx" 
 
@@ -15,6 +16,7 @@ bool Supervision::Initialize()
 		&& Vulkan::GetInstance().Init() 
 		&& SceneMng::GetInstance().Init()
 		&& DebugClass::GetInstance().Init()
+		&& GameObjectMng::GetInstance().Init()
 	)
 		return true;
 	return false;

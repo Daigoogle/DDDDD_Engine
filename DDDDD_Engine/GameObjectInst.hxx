@@ -20,7 +20,7 @@ class GameObjectInst
 {
 	friend class GameObjectMng;
 	friend class GameObject;
-public:
+private:
 	GameObjectInst();
 	~GameObjectInst();
 
@@ -35,9 +35,9 @@ public:
 	template<typename TypeComp>
 	TypeComp* AddComponent()
 	{
-		TypeComp* pComp = new TypeComp;
-		m_Components.push_back(pComp);
-		return pComp;
+		std::unique_ptr<TypeComp> pComp(new TypeComp);
+		m_Components.push_back(std::move(pComp));
+		return pComp.get();
 	}
 
 	template<typename TypeComp>
@@ -45,12 +45,13 @@ public:
 	{
 		for (const auto elem : m_Components)
 		{
-			TypeComp* pComp = dynamic_cast<TypeComp*>(elem);
+			TypeComp* pComp = dynamic_cast<TypeComp*>(elem.get());
 			if (pComp != nullptr)
 				return pComp;
 		}
 		return nullptr;
 	}
+
 private:
 	std::string m_Name;					// –¼‘O
 	unsigned m_Tag;						// ƒ^ƒO

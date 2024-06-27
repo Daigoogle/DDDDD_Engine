@@ -60,12 +60,6 @@ const unsigned __int64 GameObject::GetID()
 	return m_pInstance->m_ObjectID;
 }
 
-void GameObject::SetID(unsigned __int64 id)
-{
-	if (m_pInstance)
-		m_pInstance->m_ObjectID = id;
-}
-
 void GameObject::SetName(const std::string& name)
 {
 	if (m_pInstance)
@@ -74,9 +68,10 @@ void GameObject::SetName(const std::string& name)
 
 const std::string& GameObject::GetName()
 {
-	if (!m_pInstance)
-		return "";
-	return m_pInstance->m_Name;
+	if (m_pInstance)
+		return m_pInstance->m_Name;
+	static std::string str = "";
+	return str;
 }
 
 GameObject GameObject::GetParent()

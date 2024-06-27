@@ -10,7 +10,7 @@
 
 // =-=-= インクルード部 =-=-=
 #include <memory>
-#include <queue>
+#include <deque>
 #include <map>
 
 #include "SingletonsMng.hxx"
@@ -22,24 +22,40 @@ class SceneBase;
 class GameObjectMng: public SingletonBase
 {
 public:
+	// =-=-= シングルトン化 =-=-=
 	SINGLETON_MAKES(GameObjectMng)
 
+	/// @brief コンストラクタ
 	GameObjectMng();
+	/// @brief デストラクタ
 	~GameObjectMng();
 
+	/// @brief 初期化処理
+	/// @return 成功したらtrue
 	bool Init() override;
+	/// @brief 更新処理
 	void Update() override;
 
+	/// @brief 生成オブジェクトの初期化と登録
 	void InitObjects();
+	/// @brief 現シーンのオブジェクトの更新
+	/// @param pScene 現在のシーン
 	void UpdateObjects(SceneBase* pScene);
+	/// @brief シーンのオブジェクトの解放
+	/// @param pScene 解放するシーン
 	void DeleteObjects(SceneBase* pScene);
 
+	/// @brief オブジェクトの作成
+	/// @param pScene 作成するオブジェクトの所属シーン
+	/// @return 作成したオブジェクト
 	GameObject MakeObject(SceneBase* pScene);
 
 private:
-	std::map<SceneBase* ,std::queue<std::unique_ptr<GameObjectInst>>> m_ObjectsLoadQueue;
-	std::map<SceneBase* ,std::queue<std::unique_ptr<GameObjectInst>>> m_ObjectsQueue;
-	unsigned __int64 m_LastObjectID;
+	/// @brief オブジェクトのロードキュー
+	std::map<SceneBase* ,std::deque<GameObjectInst*>> m_ObjectsLoadQueue;
+	/// @brief オブジェクトの更新キュー
+	std::map<SceneBase* ,std::deque<GameObjectInst*>> m_ObjectsQueue;
+	unsigned __int64 m_LastObjectID;// 最後に割り当てたID
 };
 
 #endif // !_____GameObjectMng_HXX_____

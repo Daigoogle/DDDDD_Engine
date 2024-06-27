@@ -1,7 +1,7 @@
 #include "SingletonsMng.hxx"
 
-std::array<std::vector<SingletonBase*>, static_cast<int>(UPDATE_ORDER::LAST_UPDATE) + 1> Supervision::m_Updaters;//更新処理
-std::vector<void(*)()> Supervision::m_finalizers;//終了処理
+std::array<std::deque<SingletonBase*>, static_cast<int>(UPDATE_ORDER::LAST_UPDATE) + 1> Supervision::m_Updaters;//更新処理
+std::deque<void(*)()> Supervision::m_finalizers;//終了処理
 
 namespace 
 {
@@ -35,7 +35,7 @@ void Supervision::addUpdater(SingletonBase* pSingleton, UPDATE_ORDER order)
 /// @brief 更新処理を行う
 void Supervision::Updater()
 {
-	for (auto& updaters : m_Updaters)
+	for (auto& updaters : m_Updaters)// 更新処理を順番に実行
 		for (auto& updater : updaters)
 			updater->Update();// 更新処理を実行
 }
@@ -46,6 +46,8 @@ void Supervision::Finalize()
 	std::lock_guard<std::mutex> lock(gMutex);// 排他制御
 	for (auto& elem : m_Updaters)// 更新処理をクリア
 		elem.clear();
-	for (int i = m_finalizers.size() - 1; i >= 0;i--)// 終了処理を逆順に実行
-		m_finalizers[i]();
+	while (!m_finalizers.empty()){// 終了処理を逆順に実行
+		m_finalizers.back()();
+		m_finalizers.pop_back();
+	}
 }

@@ -10,8 +10,9 @@
 
 // =-=-= インクルード部 =-=-=
 #include <array>
-#include <vector>
+#include <deque>
 #include <mutex>
+#include <type_traits>
 
 // =-=-= マクロ定義部 =-=-=
 #define SINGLETON_MAKES(Type) Type(const Type&) = delete;Type& operator=(const Type&) = delete;Type(Type&&) = delete;Type& operator=(Type&&) = delete;static Type& GetInstance(){return _Singleton<Type>::GetInstance();} 
@@ -45,7 +46,7 @@ public:
 /// @brief シングルトンの最終処理を行うクラス
 class Supervision final
 {
-	template<typename T>
+	template<typename Type, typename Enable>
 	friend class _Singleton;
 	friend SingletonBase::SingletonBase(UPDATE_ORDER Order);
 public:
@@ -69,13 +70,13 @@ private:
 	static void addUpdater(SingletonBase* pSingleton, UPDATE_ORDER order);
 
 private:
-	static std::array<std::vector<SingletonBase*>, static_cast<int>(UPDATE_ORDER::LAST_UPDATE) + 1> m_Updaters;//更新処理
-	static std::vector<void(*)()> m_finalizers;//終了処理
+	static std::array<std::deque<SingletonBase*>, static_cast<int>(UPDATE_ORDER::LAST_UPDATE) + 1> m_Updaters;//更新処理
+	static std::deque<void(*)()> m_finalizers;//終了処理
 };
 
 /// @brief シングルトンのインスタンスを生成・保持するクラス
-/// @tparam Type シングルトンの型
-template<typename Type>
+/// @tparam Type シングルトンの型 ※SingletonBaseを継承していること
+template<typename Type, typename Enable = std::enable_if_t<std::is_base_of_v<SingletonBase, Type>>>
 class _Singleton final
 {
 public:
@@ -102,12 +103,12 @@ private:
 		instance = nullptr;
 	}
 
-	static std::once_flag initFlag;	//作ったかのフラグ(並列処理対応)
+	static std::once_flag initFlag;	//作ったかのフラグ(排他制御)
 	static Type* instance;			//自らのインスタンス
 };
 
-//	静的メンバを定義
-template <typename Type> std::once_flag _Singleton<Type>::initFlag;
-template <typename Type> Type* _Singleton<Type>::instance = nullptr;
+// 静的メンバを定義
+template<typename Type, typename Enable> std::once_flag _Singleton<Type,Enable>::initFlag;
+template <typename Type, typename Enable> Type* _Singleton<Type,Enable>::instance = nullptr;
 
 #endif // !_____SingletonsMng_HXX_____

@@ -75,7 +75,7 @@
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LinkIncremental>false</LinkIncremental>
+    <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -158,6 +158,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CameraComp.cxx" />
     <ClCompile Include="DebugClass.cxx" />
     <ClCompile Include="GameObject.cxx" />
     <ClCompile Include="GameObjectInst.cxx" />
@@ -171,10 +172,12 @@
     <ClCompile Include="SingletonsMng.cxx" />
     <ClCompile Include="Supervision.cxx" />
     <ClCompile Include="Swapchain.cxx" />
+    <ClCompile Include="TitleScene.cxx" />
     <ClCompile Include="Vectors.cxx" />
     <ClCompile Include="Vulkan.cxx" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CameraComp.hxx" />
     <ClInclude Include="Component.hxx" />
     <ClInclude Include="DebugClass.hxx" />
     <ClInclude Include="GameObject.hxx" />
@@ -191,6 +194,7 @@
     <ClInclude Include="SDLApp.hxx" />
     <ClInclude Include="SingletonsMng.hxx" />
     <ClInclude Include="Swapchain.hxx" />
+    <ClInclude Include="TitleScene.hxx" />
     <ClInclude Include="Vectors.hxx" />
     <ClInclude Include="Vulkan.hxx" />
   </ItemGroup>
