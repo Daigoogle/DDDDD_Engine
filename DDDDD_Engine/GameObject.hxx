@@ -16,6 +16,7 @@ class GameObject
 {
 public:
 	GameObject();
+	GameObject(GameObjectInst* pInstance);
 	~GameObject();
 
 	void SetInstance(GameObjectInst* pInstance);

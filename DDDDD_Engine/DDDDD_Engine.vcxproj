@@ -159,6 +159,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CameraComp.cxx" />
+    <ClCompile Include="Component.cxx" />
     <ClCompile Include="DebugClass.cxx" />
     <ClCompile Include="GameObject.cxx" />
     <ClCompile Include="GameObjectInst.cxx" />

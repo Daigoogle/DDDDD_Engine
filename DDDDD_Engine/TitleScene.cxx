@@ -16,6 +16,7 @@ bool TitleScene::Init()
 {
 	GameObject obj = MakeObject();
 	
+
 	obj.AddComponent<CameraComp>();
 	obj.AddComponent<int>(); // Component‚ğŒp³‚µ‚Ä‚¢‚È‚¢ƒNƒ‰ƒX‚Í’Ç‰Á‚Å‚«‚È‚¢
 	

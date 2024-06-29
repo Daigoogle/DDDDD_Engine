@@ -7,6 +7,12 @@ GameObject::GameObject()
 
 }
 
+GameObject::GameObject(GameObjectInst* pInstance)
+	: m_pInstance(pInstance)
+{
+
+}
+
 GameObject::~GameObject()
 {
 

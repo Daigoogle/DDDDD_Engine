@@ -8,18 +8,23 @@
 #ifndef _____Component_HXX_____
 #define _____Component_HXX_____
 
-// =-=-= インクルード部 =-=-=
-
 class GameObjectInst;
+class GameObject;
 
 class Component
 {
+	friend class GameObjectInst;
 public:
-	Component() {}
+	GameObject GetGameObject();
+
+private:
+	Component():m_pGameObjectInst(nullptr) {}
 	virtual ~Component() {}
 
 	virtual bool Init() = 0;
 	virtual void Update() = 0;
+
+	GameObjectInst* m_pGameObjectInst;
 };
 
 #endif // !_____Component_HXX_____
