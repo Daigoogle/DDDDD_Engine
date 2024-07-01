@@ -94,11 +94,11 @@ bool Vulkan::Init()
     uint32_t graphicsQueueFamilyIndex;
 
     // 物理デバイスの列挙
-    for (size_t i = 0; i < physicalDevices.size(); i++) {
+    for (uint32_t i = 0; i < physicalDevices.size(); i++) {
         std::vector<vk::QueueFamilyProperties> queueProps = physicalDevices[i].getQueueFamilyProperties();
         bool existsGraphicsQueue = false;
 
-        for (size_t j = 0; j < queueProps.size(); j++) {
+        for (uint32_t j = 0; j < queueProps.size(); j++) {
             if (queueProps[j].queueFlags & vk::QueueFlagBits::eGraphics &&
                 physicalDevices[i].getSurfaceSupportKHR(j, m_uSurface.get())) {
                 existsGraphicsQueue = true;
@@ -110,7 +110,7 @@ bool Vulkan::Init()
         std::vector<vk::ExtensionProperties> extProps = physicalDevices[i].enumerateDeviceExtensionProperties();
         bool supportsSwapchainExtension = false;
 
-        for (size_t j = 0; j < extProps.size(); j++) {
+        for (uint32_t j = 0; j < extProps.size(); j++) {
             if (std::string(extProps[j].extensionName.data()) == VK_KHR_SWAPCHAIN_EXTENSION_NAME) {
                 supportsSwapchainExtension = true;
                 break;
@@ -126,12 +126,12 @@ bool Vulkan::Init()
 
     if (!existsSuitablePhysicalDevice) {
         std::cerr << "使用可能な物理デバイスがありません。" << std::endl;
-        return -1;
+        return false;
     }
 
     auto devRequiredExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 
-    devCreateInfo.enabledExtensionCount = devRequiredExtensions.size();
+    devCreateInfo.enabledExtensionCount = static_cast<uint32_t>(devRequiredExtensions.size());
     devCreateInfo.ppEnabledExtensionNames = devRequiredExtensions.begin();
 
     vk::DeviceQueueCreateInfo queueCreateInfo[1];
@@ -207,8 +207,8 @@ bool Vulkan::Init()
     viewports[0].y = 0.0;
     viewports[0].minDepth = 0.0;
     viewports[0].maxDepth = 1.0;
-    viewports[0].width = screenWidth;
-    viewports[0].height = screenHeight;
+    viewports[0].width =  static_cast<float>(screenWidth);
+    viewports[0].height = static_cast<float>(screenHeight);
 
     vk::Rect2D scissors[1];
     scissors[0].offset = vk::Offset2D{ 0, 0 };
@@ -435,7 +435,7 @@ void Vulkan::Update()
     auto presentSwapchains = { m_Swapchain.get() };
     auto imgIndices = { imgIndex };
 
-    presentInfo.swapchainCount = presentSwapchains.size();
+    presentInfo.swapchainCount = static_cast<uint32_t>(presentSwapchains.size());
     presentInfo.pSwapchains = presentSwapchains.begin();
     presentInfo.pImageIndices = imgIndices.begin();
 
