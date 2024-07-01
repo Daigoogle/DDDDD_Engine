@@ -18,7 +18,7 @@ bool TitleScene::Init()
 	
 
 	obj.AddComponent<CameraComp>();
-	obj.AddComponent<int>(); // Componentを継承していないクラスは追加できない
+	//obj.AddComponent<int>(); // Componentを継承していないクラスは追加できない
 	
 	return true;
 }

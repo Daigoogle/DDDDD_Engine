@@ -1,7 +1,7 @@
 #include "SingletonsMng.hxx"
 
 #include "SDLApp.hxx"
-#include "Vulkan.hxx"
+#include "VulkanApp.hxx"
 #include "SceneMng.hxx"
 #include "GameObjectMng.hxx"
 

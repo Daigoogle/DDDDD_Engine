@@ -45,7 +45,6 @@ Create and destroy a Vulkan surface on an SDL window.
 
 #include "SingletonsMng.hxx"
 #include "SDLApp.hxx"
-#include "Vulkan.hxx"
 
 int main()
 {

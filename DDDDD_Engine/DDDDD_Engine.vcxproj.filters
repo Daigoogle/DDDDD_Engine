@@ -67,7 +67,7 @@
     <ClCompile Include="main.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="Vulkan.cxx">
+    <ClCompile Include="VulkanApp.cxx">
       <Filter>App</Filter>
     </ClCompile>
     <ClCompile Include="SDLApp.cxx">
@@ -120,7 +120,7 @@
     <ClInclude Include="main.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="Vulkan.hxx">
+    <ClInclude Include="VulkanApp.hxx">
       <Filter>App</Filter>
     </ClInclude>
     <ClInclude Include="SDLApp.hxx">

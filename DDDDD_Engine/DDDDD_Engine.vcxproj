@@ -175,7 +175,7 @@
     <ClCompile Include="Swapchain.cxx" />
     <ClCompile Include="TitleScene.cxx" />
     <ClCompile Include="Vectors.cxx" />
-    <ClCompile Include="Vulkan.cxx" />
+    <ClCompile Include="VulkanApp.cxx" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CameraComp.hxx" />
@@ -197,7 +197,7 @@
     <ClInclude Include="Swapchain.hxx" />
     <ClInclude Include="TitleScene.hxx" />
     <ClInclude Include="Vectors.hxx" />
-    <ClInclude Include="Vulkan.hxx" />
+    <ClInclude Include="VulkanApp.hxx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

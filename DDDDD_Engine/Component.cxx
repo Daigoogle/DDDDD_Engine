@@ -4,7 +4,5 @@
 
 GameObject Component::GetGameObject()
 {
-	GameObject obj;
-	obj.SetInstance(m_pGameObjectInst);
-	return obj;
+	return GameObject(m_pGameObjectInst);
 }

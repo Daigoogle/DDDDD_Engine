@@ -36,12 +36,26 @@ public:
 private:
 	SDL_Window*					m_Window;
 	unsigned int				m_extension_count;
-	std::vector<const char*>*	m_extensions;
-	std::vector<const char*>	m_layers;
-	vk::ApplicationInfo			m_appInfo;
-	vk::InstanceCreateInfo		m_instInfo;
-	vk::UniqueInstance			m_instance;
-	vk::SurfaceKHR*				m_pSurface;
+	std::vector<const char*>	m_extensions;
+	std::vector<const char*>	m_Layers;
+	vk::ApplicationInfo			m_AppInfo;
+	vk::InstanceCreateInfo		m_InstInfo;
+	vk::UniqueInstance			m_Instance;
+	vk::UniqueSurfaceKHR		m_uSurface;
+	vk::UniqueDevice m_Device;
+	vk::UniqueFence m_SwapchainImgFence;
+	vk::UniqueSwapchainKHR m_Swapchain;
+	std::vector<vk::UniqueCommandBuffer> m_CmdBufs;
+	vk::UniqueRenderPass m_Renderpass;
+	std::vector<vk::UniqueFramebuffer> swapchainFramebufs;
+	std::vector<vk::UniqueImageView> swapchainImageViews;
+	vk::UniquePipelineLayout pipelineLayout;
+	vk::UniquePipeline m_Pipeline;
+	vk::Queue graphicsQueue;
+	vk::CommandBufferAllocateInfo cmdBufAllocInfo;
+	vk::UniqueCommandPool cmdPool;
+	vk::UniqueShaderModule vertShader;
+	vk::UniqueShaderModule fragShader;
 };
 
 #endif // !_____Vulkan_HXX_____
