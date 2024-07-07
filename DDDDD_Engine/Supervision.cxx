@@ -13,7 +13,7 @@ bool Supervision::Initialize()
 {
 	// ‰Šú‰»ˆ—‚Í‚±‚Ì’†‚Ö
 	if(	SDLApp::GetInstance().Init() 
-		&& Vulkan::GetInstance().Init() 
+		&& VulkanApp::GetInstance().Init() 
 		&& SceneMng::GetInstance().Init()
 		&& DebugClass::GetInstance().Init()
 		&& GameObjectMng::GetInstance().Init()

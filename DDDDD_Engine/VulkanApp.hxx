@@ -16,46 +16,56 @@
 #include "SingletonsMng.hxx"
 
 // =-=-= クラス定義部 =-=-=
-class Vulkan:public SingletonBase
+class VulkanApp:public SingletonBase
 {
 public:
-	SINGLETON_MAKES(Vulkan)
+	// =-=-= シングルトン化 =-=-=
+	SINGLETON_MAKES(VulkanApp)
 
-	Vulkan();
-	~Vulkan();
+	/// @brief コンストラクタ
+	VulkanApp();
+	/// @brief デストラクタ
+	~VulkanApp();
 
 	/// @brief 初期化処理
 	/// @return 成功したらtrue
-	bool Init();
+	bool Init() override;
 
 	/// @brief 更新処理
-	void Update();
+	void Update() override;
 
-	/// @brief 終了処理
-	void UnInit();
+	/// @brief スワップチェインの再作成
+	void RecreateSwapchain();
 private:
-	SDL_Window*					m_Window;
-	unsigned int				m_extension_count;
-	std::vector<const char*>	m_extensions;
-	std::vector<const char*>	m_Layers;
-	vk::ApplicationInfo			m_AppInfo;
-	vk::InstanceCreateInfo		m_InstInfo;
+	SDL_Window*		m_Window;
+	unsigned int	m_extension_count;
+
+	vk::PhysicalDevice physicalDevice;
+	vk::SurfaceFormatKHR swapchainFormat;
+	vk::PresentModeKHR swapchainPresentMode;
+	std::vector<vk::Image> swapchainImages;
+
+	std::vector<const char*>				m_extensions;
+	std::vector<const char*>				m_Layers;
+	std::vector<vk::UniqueFramebuffer>		m_swapchainFramebufs;
+	std::vector<vk::UniqueImageView>		m_swapchainImageViews;
+	std::vector<vk::UniqueCommandBuffer>	m_CmdBufs;
+	vk::Queue								m_graphicsQueue;
+
 	vk::UniqueInstance			m_Instance;
 	vk::UniqueSurfaceKHR		m_uSurface;
-	vk::UniqueDevice m_Device;
-	vk::UniqueFence m_SwapchainImgFence;
-	vk::UniqueSwapchainKHR m_Swapchain;
-	std::vector<vk::UniqueCommandBuffer> m_CmdBufs;
-	vk::UniqueRenderPass m_Renderpass;
-	std::vector<vk::UniqueFramebuffer> swapchainFramebufs;
-	std::vector<vk::UniqueImageView> swapchainImageViews;
-	vk::UniquePipelineLayout pipelineLayout;
-	vk::UniquePipeline m_Pipeline;
-	vk::Queue graphicsQueue;
-	vk::CommandBufferAllocateInfo cmdBufAllocInfo;
-	vk::UniqueCommandPool cmdPool;
-	vk::UniqueShaderModule vertShader;
-	vk::UniqueShaderModule fragShader;
+	vk::UniqueDevice			m_Device;
+	vk::UniqueFence				m_SwapchainImgFence;
+	vk::UniqueSwapchainKHR		m_Swapchain;
+	vk::UniqueRenderPass		m_Renderpass;
+	vk::UniquePipelineLayout	pipelineLayout;
+	vk::UniquePipeline			m_Pipeline;
+	vk::UniqueCommandPool		cmdPool;
+	vk::UniqueShaderModule		vertShader;
+	vk::UniqueShaderModule		fragShader;
+	vk::UniqueSemaphore			imgRenderedSemaphorne;
+	vk::UniqueSemaphore			m_swapchainImgSemaphore;
+	vk::UniqueFence				imgRenderedFence;
 };
 
 #endif // !_____Vulkan_HXX_____

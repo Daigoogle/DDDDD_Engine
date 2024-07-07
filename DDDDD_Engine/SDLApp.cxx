@@ -25,7 +25,7 @@ bool SDLApp::Init()
         std::cout << "Could not initialize SDL." << std::endl;
         return false;
     }
-    m_Window = SDL_CreateWindow("Vulkan Window", SDL_WINDOWPOS_CENTERED,
+    m_Window = SDL_CreateWindow("DDDDD_Engine", SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED, m_WindowWidth, m_WindowHeight, SDL_WINDOW_VULKAN);
     if (m_Window == NULL) {
         std::cout << "Could not create SDL window." << std::endl;
@@ -57,6 +57,9 @@ void SDLApp::Update()
             break;
         }
     }
+
+
+    SDL_UpdateWindowSurface(m_Window);
 }
 
 void SDLApp::UnInit()

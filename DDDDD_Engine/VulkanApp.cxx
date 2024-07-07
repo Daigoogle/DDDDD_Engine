@@ -7,7 +7,7 @@
 #include "SDLApp.hxx"
 
 
-Vulkan::Vulkan()
+VulkanApp::VulkanApp()
     : SingletonBase(UPDATE_ORDER::SECOND_UPDATE)
     , m_Window(nullptr)
     , m_extension_count(0)
@@ -15,14 +15,17 @@ Vulkan::Vulkan()
 
 }
 
-Vulkan::~Vulkan()
+VulkanApp::~VulkanApp()
 {
-    UnInit();
+    m_graphicsQueue.waitIdle();
+    m_CmdBufs.clear();
+    m_swapchainImageViews.clear();
+    m_swapchainFramebufs.clear();
 }
 
 /// @brief 初期化処理
 /// @return 成功したらtrue
-bool Vulkan::Init()
+bool VulkanApp::Init()
 {
     // ウィンドウの取得
     SDLApp& sdlApp = SDLApp::GetInstance();
@@ -45,6 +48,8 @@ bool Vulkan::Init()
     m_Layers.push_back("VK_LAYER_KHRONOS_validation");
 #endif
 
+    vk::ApplicationInfo			m_AppInfo;
+    vk::InstanceCreateInfo		m_InstInfo;
     // vk::ApplicationInfo allows the programmer to specifiy some basic information about the
     // program, which can be useful for layers and tools to provide more debug information.
     m_AppInfo = vk::ApplicationInfo()
@@ -84,7 +89,8 @@ bool Vulkan::Init()
 
     // 物理デバイスの取得
     std::vector<vk::PhysicalDevice> physicalDevices = m_Instance->enumeratePhysicalDevices();
-    vk::PhysicalDevice physicalDevice = physicalDevices[0];//本来は適切なデバイスを選択するロジックを実装する
+    physicalDevice = physicalDevices[0];//本来は適切なデバイスを選択するロジックを実装する
+
 
     // 論理デバイスの作成
     vk::DeviceCreateInfo devCreateInfo;
@@ -147,14 +153,14 @@ bool Vulkan::Init()
 
     m_Device = physicalDevice.createDeviceUnique(devCreateInfo);
 
-    graphicsQueue = m_Device->getQueue(graphicsQueueFamilyIndex, 0);
+    m_graphicsQueue = m_Device->getQueue(graphicsQueueFamilyIndex, 0);
 
     vk::SurfaceCapabilitiesKHR surfaceCapabilities = physicalDevice.getSurfaceCapabilitiesKHR(m_uSurface.get());
     std::vector<vk::SurfaceFormatKHR> surfaceFormats = physicalDevice.getSurfaceFormatsKHR(m_uSurface.get());
     std::vector<vk::PresentModeKHR> surfacePresentModes = physicalDevice.getSurfacePresentModesKHR(m_uSurface.get());
 
-    vk::SurfaceFormatKHR swapchainFormat = surfaceFormats[0];
-    vk::PresentModeKHR swapchainPresentMode = surfacePresentModes[0];
+    swapchainFormat = surfaceFormats[0];
+    swapchainPresentMode = surfacePresentModes[0];
 
     vk::SwapchainCreateInfoKHR swapchainCreateInfo;
     swapchainCreateInfo.surface = m_uSurface.get();
@@ -171,7 +177,155 @@ bool Vulkan::Init()
 
     m_Swapchain = m_Device->createSwapchainKHRUnique(swapchainCreateInfo);
 
-    std::vector<vk::Image> swapchainImages = m_Device->getSwapchainImagesKHR(m_Swapchain.get());
+    swapchainImages = m_Device->getSwapchainImagesKHR(m_Swapchain.get());
+
+
+
+    RecreateSwapchain();
+
+
+    vk::CommandPoolCreateInfo cmdPoolCreateInfo;
+    vk::FenceCreateInfo fenceCreateInfo;
+
+    cmdPoolCreateInfo.queueFamilyIndex = graphicsQueueFamilyIndex;
+    cmdPoolCreateInfo.flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer;
+    cmdPool = m_Device->createCommandPoolUnique(cmdPoolCreateInfo);
+
+    vk::CommandBufferAllocateInfo cmdBufAllocInfo;
+    cmdBufAllocInfo.commandPool = cmdPool.get();
+    cmdBufAllocInfo.commandBufferCount = 1;
+    cmdBufAllocInfo.level = vk::CommandBufferLevel::ePrimary;
+    m_CmdBufs =
+        m_Device->allocateCommandBuffersUnique(cmdBufAllocInfo);
+
+    m_SwapchainImgFence = m_Device->createFenceUnique(fenceCreateInfo);
+
+    vk::SemaphoreCreateInfo semaphoreCreateInfo;
+
+    m_swapchainImgSemaphore = m_Device->createSemaphoreUnique(semaphoreCreateInfo);
+    imgRenderedSemaphorne = m_Device->createSemaphoreUnique(semaphoreCreateInfo);
+
+    fenceCreateInfo.flags = vk::FenceCreateFlagBits::eSignaled;
+
+    imgRenderedFence = m_Device->createFenceUnique(fenceCreateInfo);
+
+    return true;
+}
+
+/// @brief 更新処理
+void VulkanApp::Update()
+{
+    m_Device->waitForFences({ imgRenderedFence.get() }, VK_TRUE, UINT64_MAX);
+
+    vk::ResultValue<uint32_t> acquireImgResult = m_Device->acquireNextImageKHR(m_Swapchain.get(), 1'000'000'000, m_swapchainImgSemaphore.get());
+    if (acquireImgResult.result == vk::Result::eSuboptimalKHR || acquireImgResult.result == vk::Result::eErrorOutOfDateKHR) {
+        std::cerr << "スワップチェーンを再作成します。" << std::endl;
+        RecreateSwapchain();
+        Update();
+        return;
+    }
+    if (acquireImgResult.result != vk::Result::eSuccess) {
+        std::cerr << "次フレームの要求に失敗しました。" << std::endl;
+        return ;
+    }
+
+    m_Device->resetFences({ imgRenderedFence.get() });
+
+    uint32_t imgIndex = acquireImgResult.value;
+
+    m_CmdBufs[0]->reset();
+
+    vk::CommandBufferBeginInfo cmdBeginInfo;
+    m_CmdBufs[0]->begin(cmdBeginInfo);
+
+    vk::ClearValue clearVal[1];
+    clearVal[0].color.float32[0] = 0.0f;
+    clearVal[0].color.float32[1] = 0.0f;
+    clearVal[0].color.float32[2] = 0.0f;
+    clearVal[0].color.float32[3] = 1.0f;
+
+    vk::RenderPassBeginInfo renderpassBeginInfo;
+    renderpassBeginInfo.renderPass = m_Renderpass.get();
+    renderpassBeginInfo.framebuffer = m_swapchainFramebufs[imgIndex].get();
+    renderpassBeginInfo.renderArea = vk::Rect2D({ 0,0 }, { SDLApp::GetInstance().GetWndWidth() , SDLApp::GetInstance().GetWndHeight() });
+    renderpassBeginInfo.clearValueCount = 1;
+    renderpassBeginInfo.pClearValues = clearVal;
+
+    m_CmdBufs[0]->beginRenderPass(renderpassBeginInfo, vk::SubpassContents::eInline);
+
+    m_CmdBufs[0]->bindPipeline(vk::PipelineBindPoint::eGraphics, m_Pipeline.get());
+    m_CmdBufs[0]->draw(3, 1, 0, 0);
+
+    m_CmdBufs[0]->endRenderPass();
+
+    m_CmdBufs[0]->end();
+
+    vk::CommandBuffer submitCmdBuf[1] = { m_CmdBufs[0].get() };
+    vk::SubmitInfo submitInfo;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = submitCmdBuf;
+
+    vk::Semaphore renderwaitSemaphores[] = { m_swapchainImgSemaphore.get() };
+    vk::PipelineStageFlags renderwaitStages[] = { vk::PipelineStageFlagBits::eColorAttachmentOutput };
+    submitInfo.waitSemaphoreCount = 1;
+    submitInfo.pWaitSemaphores = renderwaitSemaphores;
+    submitInfo.pWaitDstStageMask = renderwaitStages;
+
+    vk::Semaphore renderSignalSemaphores[] = { imgRenderedSemaphorne.get() };
+    submitInfo.signalSemaphoreCount = 1;
+    submitInfo.pSignalSemaphores = renderSignalSemaphores;
+
+    m_graphicsQueue.submit({ submitInfo }, imgRenderedFence.get());
+
+    vk::PresentInfoKHR presentInfo;
+
+    auto presentSwapchains = { m_Swapchain.get() };
+    auto imgIndices = { imgIndex };
+
+    presentInfo.swapchainCount = static_cast<uint32_t>(presentSwapchains.size());
+    presentInfo.pSwapchains = presentSwapchains.begin();
+    presentInfo.pImageIndices = imgIndices.begin();
+
+    vk::Semaphore presenWaitSemaphores[] = { imgRenderedSemaphorne.get() };
+    presentInfo.waitSemaphoreCount = 1;
+    presentInfo.pWaitSemaphores = presenWaitSemaphores;
+    
+    m_graphicsQueue.presentKHR(presentInfo);
+}
+
+void VulkanApp::RecreateSwapchain()
+{   // 破棄処理
+    m_swapchainFramebufs.clear();
+    m_swapchainImageViews.clear();
+    m_swapchainImageViews.clear();
+    m_Renderpass.reset();
+    m_Pipeline.reset();
+    m_Swapchain.reset();
+
+    // 新しいサイズの取得
+    SDLApp& sdlApp = SDLApp::GetInstance();
+    uint32_t screenWidth = sdlApp.GetWndWidth(), screenHeight = sdlApp.GetWndHeight();
+
+    vk::SurfaceCapabilitiesKHR surfaceCapabilities = physicalDevice.getSurfaceCapabilitiesKHR(m_uSurface.get());
+
+    // スワップチェーンの作成
+    vk::SwapchainCreateInfoKHR swapchainCreateInfo;
+    swapchainCreateInfo.surface = m_uSurface.get();
+    swapchainCreateInfo.minImageCount = surfaceCapabilities.minImageCount + 1;
+    swapchainCreateInfo.imageFormat = swapchainFormat.format;
+    swapchainCreateInfo.imageColorSpace = swapchainFormat.colorSpace;
+    swapchainCreateInfo.imageExtent = surfaceCapabilities.currentExtent;
+    swapchainCreateInfo.imageArrayLayers = 1;
+    swapchainCreateInfo.imageUsage = vk::ImageUsageFlagBits::eColorAttachment;
+    swapchainCreateInfo.imageSharingMode = vk::SharingMode::eExclusive;
+    swapchainCreateInfo.preTransform = surfaceCapabilities.currentTransform;
+    swapchainCreateInfo.presentMode = swapchainPresentMode;
+    swapchainCreateInfo.clipped = VK_TRUE;
+
+    m_Swapchain = m_Device->createSwapchainKHRUnique(swapchainCreateInfo);
+
+    // スワップチェーンのイメージの取得
+    swapchainImages = m_Device->getSwapchainImagesKHR(m_Swapchain.get());
 
     vk::AttachmentDescription attachments[1];
     attachments[0].format = swapchainFormat.format;
@@ -207,7 +361,7 @@ bool Vulkan::Init()
     viewports[0].y = 0.0;
     viewports[0].minDepth = 0.0;
     viewports[0].maxDepth = 1.0;
-    viewports[0].width =  static_cast<float>(screenWidth);
+    viewports[0].width = static_cast<float>( screenWidth);
     viewports[0].height = static_cast<float>(screenHeight);
 
     vk::Rect2D scissors[1];
@@ -266,7 +420,7 @@ bool Vulkan::Init()
     std::ifstream vertSpvFile("Assets/Shader/shader.vert.spv", std::ios_base::binary | std::ifstream::ate);
     if (!vertSpvFile.is_open()) {
         std::cerr << "ファイルが開けませんでした。" << std::endl;
-        return false;
+        return;
     }
 
     vertSpvFileSz = static_cast<size_t>(vertSpvFile.tellg());
@@ -285,7 +439,7 @@ bool Vulkan::Init()
     std::ifstream fragSpvFile("Assets/Shader/shader.frag.spv", std::ios_base::binary | std::ifstream::ate);
     if (!fragSpvFile.is_open()) {
         std::cerr << "ファイルが開けませんでした。" << std::endl;
-        return false;
+        return;
     }
 
     fragSpvFileSz = static_cast<size_t>(fragSpvFile.tellg());
@@ -321,8 +475,9 @@ bool Vulkan::Init()
     pipelineCreateInfo.pStages = shaderStage;
 
     m_Pipeline = m_Device->createGraphicsPipelineUnique(nullptr, pipelineCreateInfo).value;
-
-    swapchainImageViews = std::vector<vk::UniqueImageView>(swapchainImages.size());
+    
+    // イメージビューの作成
+    m_swapchainImageViews.resize(swapchainImages.size());
 
     for (size_t i = 0; i < swapchainImages.size(); i++) {
         vk::ImageViewCreateInfo imgViewCreateInfo;
@@ -339,14 +494,15 @@ bool Vulkan::Init()
         imgViewCreateInfo.subresourceRange.baseArrayLayer = 0;
         imgViewCreateInfo.subresourceRange.layerCount = 1;
 
-        swapchainImageViews[i] = m_Device->createImageViewUnique(imgViewCreateInfo);
+        m_swapchainImageViews[i] = m_Device->createImageViewUnique(imgViewCreateInfo);
     }
 
-    swapchainFramebufs = std::vector<vk::UniqueFramebuffer>(swapchainImages.size());
+    // フレームバッファの作成
+    m_swapchainFramebufs.resize(swapchainImages.size());
 
     for (size_t i = 0; i < swapchainImages.size(); i++) {
         vk::ImageView frameBufAttachments[1];
-        frameBufAttachments[0] = swapchainImageViews[i].get();
+        frameBufAttachments[0] = m_swapchainImageViews[i].get();
 
         vk::FramebufferCreateInfo frameBufCreateInfo;
         frameBufCreateInfo.width = surfaceCapabilities.currentExtent.width;
@@ -356,96 +512,6 @@ bool Vulkan::Init()
         frameBufCreateInfo.attachmentCount = 1;
         frameBufCreateInfo.pAttachments = frameBufAttachments;
 
-        swapchainFramebufs[i] = m_Device->createFramebufferUnique(frameBufCreateInfo);
+        m_swapchainFramebufs[i] = m_Device->createFramebufferUnique(frameBufCreateInfo);
     }
-
-    vk::CommandPoolCreateInfo cmdPoolCreateInfo;
-    vk::FenceCreateInfo fenceCreateInfo;
-
-    cmdPoolCreateInfo.queueFamilyIndex = graphicsQueueFamilyIndex;
-    cmdPoolCreateInfo.flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer;
-    cmdPool = m_Device->createCommandPoolUnique(cmdPoolCreateInfo);
-
-    cmdBufAllocInfo.commandPool = cmdPool.get();
-    cmdBufAllocInfo.commandBufferCount = 1;
-    cmdBufAllocInfo.level = vk::CommandBufferLevel::ePrimary;
-    m_CmdBufs =
-        m_Device->allocateCommandBuffersUnique(cmdBufAllocInfo);
-
-    m_SwapchainImgFence = m_Device->createFenceUnique(fenceCreateInfo);
-
-    return true;
-}
-
-/// @brief 更新処理
-void Vulkan::Update()
-{
-    m_Device->resetFences({ m_SwapchainImgFence.get() });
-
-    vk::ResultValue<uint32_t> acquireImgResult = m_Device->acquireNextImageKHR(m_Swapchain.get(), 1'000'000'000, {}, m_SwapchainImgFence.get());
-    if (acquireImgResult.result != vk::Result::eSuccess) {
-        std::cerr << "次フレームの取得に失敗しました。" << std::endl;
-        return ;
-    }
-    uint32_t imgIndex = acquireImgResult.value;
-
-    if (m_Device->waitForFences({ m_SwapchainImgFence.get() }, VK_TRUE, 1'000'000'000) != vk::Result::eSuccess) {
-        std::cerr << "次フレームの取得に失敗しました。" << std::endl;
-        return ;
-    }
-    m_CmdBufs[0]->reset();
-
-    vk::CommandBufferBeginInfo cmdBeginInfo;
-    m_CmdBufs[0]->begin(cmdBeginInfo);
-
-    vk::ClearValue clearVal[1];
-    clearVal[0].color.float32[0] = 0.0f;
-    clearVal[0].color.float32[1] = 0.0f;
-    clearVal[0].color.float32[2] = 0.0f;
-    clearVal[0].color.float32[3] = 1.0f;
-
-    SDLApp& sdlApp = SDLApp::GetInstance();
-
-    vk::RenderPassBeginInfo renderpassBeginInfo;
-    renderpassBeginInfo.renderPass = m_Renderpass.get();
-    renderpassBeginInfo.framebuffer = swapchainFramebufs[imgIndex].get();
-    renderpassBeginInfo.renderArea = vk::Rect2D({ 0,0 }, { sdlApp.GetWndWidth() , sdlApp.GetWndHeight()});
-    renderpassBeginInfo.clearValueCount = 1;
-    renderpassBeginInfo.pClearValues = clearVal;
-
-    m_CmdBufs[0]->beginRenderPass(renderpassBeginInfo, vk::SubpassContents::eInline);
-
-    m_CmdBufs[0]->bindPipeline(vk::PipelineBindPoint::eGraphics, m_Pipeline.get());
-    m_CmdBufs[0]->draw(3, 1, 0, 0);
-
-    m_CmdBufs[0]->endRenderPass();
-
-    m_CmdBufs[0]->end();
-
-    vk::CommandBuffer submitCmdBuf[1] = { m_CmdBufs[0].get() };
-    vk::SubmitInfo submitInfo;
-    submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = submitCmdBuf;
-    graphicsQueue.submit({ submitInfo }, nullptr);
-
-    graphicsQueue.waitIdle();
-
-    vk::PresentInfoKHR presentInfo;
-
-    auto presentSwapchains = { m_Swapchain.get() };
-    auto imgIndices = { imgIndex };
-
-    presentInfo.swapchainCount = static_cast<uint32_t>(presentSwapchains.size());
-    presentInfo.pSwapchains = presentSwapchains.begin();
-    presentInfo.pImageIndices = imgIndices.begin();
-
-    graphicsQueue.presentKHR(presentInfo);
-
-    //graphicsQueue.waitIdle();
-}
-
-/// @brief 終了処理
-void Vulkan::UnInit()
-{
-
 }
