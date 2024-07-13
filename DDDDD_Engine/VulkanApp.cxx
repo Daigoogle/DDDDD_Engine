@@ -5,19 +5,27 @@
 #include <fstream>
 #include <vulkan/vulkan.h>
 #include "SDLApp.hxx"
+#include "Vectors.hxx"
 
 struct Vertex {
-    float x, y;
+    fVec2 Pos;
+    fVec3 Color;
+    //fVec3 Normal;
 };
 std::vector<Vertex> vertices = {
-    Vertex{ 0.2f, -0.5f },
-    Vertex{ 0.5f,  0.5f },
-    Vertex{-0.5f,  0.8f },
+    Vertex{fVec2{-0.5f, 0.5f}, fVec3{ 0.0f, 0.0f, 1.0f}},
+    Vertex{fVec2{-0.5f,-0.5f}, fVec3{ 0.0f, 1.0f, 0.0f}},
+    Vertex{fVec2{ 0.5f,-0.5f}, fVec3{ 1.0f, 0.0f, 0.0f}},
+    Vertex{fVec2{ 0.5f, 0.5f}, fVec3{ 1.0f, 1.0f, 1.0f}},
 };
+std::vector<uint16_t> indices = { 0,1,2,0,2,3 };
+
+
 
 VulkanApp::VulkanApp()
     : SingletonBase(UPDATE_ORDER::SECOND_UPDATE)
     , m_Window(nullptr)
+    , swapchainPresentMode()
     , m_extension_count(0)
 {
 
@@ -25,8 +33,6 @@ VulkanApp::VulkanApp()
 
 VulkanApp::~VulkanApp()
 {
-
-    m_Device->unmapMemory(vertexBufMemory.get());
     m_graphicsQueue.waitIdle();
     m_CmdBufs.clear();
     m_swapchainImageViews.clear();
@@ -165,7 +171,7 @@ bool VulkanApp::Init()
 
     m_graphicsQueue = m_Device->getQueue(graphicsQueueFamilyIndex, 0);
 
-
+    /// 頂点バッファの作成
     vk::BufferCreateInfo vertBufferCreateInfo;
     vertBufferCreateInfo.size = sizeof(Vertex) * vertices.size();
     vertBufferCreateInfo.usage = vk::BufferUsageFlagBits::eVertexBuffer;
@@ -191,26 +197,79 @@ bool VulkanApp::Init()
     }
     if (!suitableMemoryTypeFound) {
         std::cerr << "適切なメモリタイプが存在しません。" << std::endl;
-        return -1;
+        return false;
     }
 
     vertexBufMemory = m_Device->allocateMemoryUnique(vertexBufMemAllocInfo);
 
     m_Device->bindBufferMemory(vertexBuf.get(), vertexBufMemory.get(), 0);
 
+
+    /// インデックスバッファの作成
+    vk::BufferCreateInfo indexBufferCreateInfo;
+    indexBufferCreateInfo.size = sizeof(uint16_t) * indices.size();
+    indexBufferCreateInfo.usage = vk::BufferUsageFlagBits::eIndexBuffer;    // ここだけ注意
+    indexBufferCreateInfo.sharingMode = vk::SharingMode::eExclusive;
+
+    indexBuf = m_Device->createBufferUnique(indexBufferCreateInfo);
+
+    vk::MemoryRequirements indexBufMemReq = m_Device->getBufferMemoryRequirements(indexBuf.get());
+
+    vk::MemoryAllocateInfo indexBufMemAllocInfo;
+    indexBufMemAllocInfo.allocationSize = indexBufMemReq.size;
+
+    suitableMemoryTypeFound = false;
+    for (uint32_t i = 0; i < memProps.memoryTypeCount; i++) {
+        if (indexBufMemReq.memoryTypeBits & (1 << i) &&
+            (memProps.memoryTypes[i].propertyFlags & vk::MemoryPropertyFlagBits::eHostVisible)) {
+            indexBufMemAllocInfo.memoryTypeIndex = i;
+            suitableMemoryTypeFound = true;
+            break;
+        }
+    }
+    if (!suitableMemoryTypeFound) {
+        std::cerr << "適切なメモリタイプが存在しません。" << std::endl;
+        return -1;
+    }
+
+    indexBufMemory = m_Device->allocateMemoryUnique(indexBufMemAllocInfo);
+
+    m_Device->bindBufferMemory(indexBuf.get(), indexBufMemory.get(), 0);
+
+
+    // バッファへの書き込み
     void* vertexBufMem = m_Device->mapMemory(vertexBufMemory.get(), 0, sizeof(Vertex) * vertices.size());
 
     std::memcpy(vertexBufMem, vertices.data(), sizeof(Vertex) * vertices.size());
 
     m_Device->flushMappedMemoryRanges({ vk::MappedMemoryRange(vertexBufMemory.get(), 0, sizeof(Vertex) * vertices.size()) });
+    m_Device->unmapMemory(vertexBufMemory.get());
+
+    vertexBindingDescription[0].binding = 0;
+    vertexBindingDescription[0].stride = sizeof(Vertex);
+    vertexBindingDescription[0].inputRate = vk::VertexInputRate::eVertex;
 
     vertexInputDescription[0].binding = 0;
     vertexInputDescription[0].location = 0;
     vertexInputDescription[0].format = vk::Format::eR32G32Sfloat;
-    vertexInputDescription[0].offset = 0;
-    vertexBindingDescription[0].binding = 0;
-    vertexBindingDescription[0].stride = sizeof(Vertex);
-    vertexBindingDescription[0].inputRate = vk::VertexInputRate::eVertex;
+    vertexInputDescription[0].offset = offsetof(Vertex,Pos);
+    vertexInputDescription[1].binding = 0;
+    vertexInputDescription[1].location = 1;
+    vertexInputDescription[1].format = vk::Format::eR32G32B32Sfloat;
+    vertexInputDescription[1].offset = offsetof(Vertex,Color);
+    //vertexInputDescription[2].binding = 0;
+    //vertexInputDescription[2].location = 2;
+    //vertexInputDescription[2].format = vk::Format::eR32G32B32Sfloat;
+    //vertexInputDescription[2].offset = offsetof(Vertex, Normal);
+
+    // バッファへの書き込み（インデックス編）
+    void* indexBufMem = m_Device->mapMemory(indexBufMemory.get(), 0, sizeof(uint16_t) * indices.size());
+
+    std::memcpy(indexBufMem, indices.data(), sizeof(uint16_t) * indices.size());
+
+    m_Device->flushMappedMemoryRanges(vk::MappedMemoryRange{ indexBufMemory.get(), 0, sizeof(uint16_t) * indices.size() });
+    m_Device->unmapMemory(indexBufMemory.get());
+
 
     vk::SurfaceCapabilitiesKHR surfaceCapabilities = physicalDevice.getSurfaceCapabilitiesKHR(m_uSurface.get());
     std::vector<vk::SurfaceFormatKHR> surfaceFormats = physicalDevice.getSurfaceFormatsKHR(m_uSurface.get());
@@ -340,22 +399,26 @@ void VulkanApp::RecreateSwapchain()
     viewports[0].width = static_cast<float>(screenWidth);
     viewports[0].height = static_cast<float>(screenHeight);
 
+    // シザーの設定
     vk::Rect2D scissors[1];
     scissors[0].offset = vk::Offset2D{ 0, 0 };
     scissors[0].extent = vk::Extent2D{ screenWidth, screenHeight };
 
+    // ビューポートの設定
     vk::PipelineViewportStateCreateInfo viewportState;
     viewportState.viewportCount = 1;
     viewportState.pViewports = viewports;
     viewportState.scissorCount = 1;
     viewportState.pScissors = scissors;
 
+    // 頂点入力の設定
     vk::PipelineVertexInputStateCreateInfo vertexInputInfo;
     vertexInputInfo.vertexBindingDescriptionCount = 1;
     vertexInputInfo.pVertexBindingDescriptions = vertexBindingDescription;
-    vertexInputInfo.vertexAttributeDescriptionCount = 1;
+    vertexInputInfo.vertexAttributeDescriptionCount = 2;
     vertexInputInfo.pVertexAttributeDescriptions = vertexInputDescription;
 
+    // 入力アセンブリの設定
     vk::PipelineInputAssemblyStateCreateInfo inputAssembly;
     inputAssembly.topology = vk::PrimitiveTopology::eTriangleList;
     inputAssembly.primitiveRestartEnable = false;
@@ -521,7 +584,7 @@ void VulkanApp::Update()
     vk::ClearValue clearVal[1];
     clearVal[0].color.float32[0] = 0.0f;
     clearVal[0].color.float32[1] = 0.0f;
-    clearVal[0].color.float32[2] = 1.0f;
+    clearVal[0].color.float32[2] = 0.0f;
     clearVal[0].color.float32[3] = 1.0f;
 
     vk::RenderPassBeginInfo renderpassBeginInfo;
@@ -535,7 +598,8 @@ void VulkanApp::Update()
     
     m_CmdBufs[0]->bindPipeline(vk::PipelineBindPoint::eGraphics, m_Pipeline.get());
     m_CmdBufs[0]->bindVertexBuffers(0, { vertexBuf.get() }, { 0 }); // 追加
-    m_CmdBufs[0]->draw(3, 1, 0, 0);
+    m_CmdBufs[0]->bindIndexBuffer(indexBuf.get(), 0, vk::IndexType::eUint16);
+    m_CmdBufs[0]->drawIndexed(indices.size(), 1, 0, 0, 0);
     
     m_CmdBufs[0]->endRenderPass();
 

@@ -7,15 +7,15 @@
       "RelativeMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|solutionrelative:DDDDD_Engine\\VulkanApp.cxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|C:\\DDDDD_Engine\\DDDDD_Engine\\VulkanApp.hxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|solutionrelative:DDDDD_Engine\\VulkanApp.hxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|C:\\DDDDD_Engine\\DDDDD_Engine\\SingletonsMng.hxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|solutionrelative:DDDDD_Engine\\SingletonsMng.hxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\VulkanSDK\\1.3.283.0\\Include\\vulkan\\vulkan.hpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|C:\\DDDDD_Engine\\DDDDD_Engine\\VulkanApp.hxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{34E36632-19DE-457C-A18B-44DCE36DB6D6}|DDDDD_Engine\\DDDDD_Engine.vcxproj|solutionrelative:DDDDD_Engine\\VulkanApp.hxx||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\VulkanSDK\\1.3.283.0\\Include\\vulkan\\vulkan_funcs.hpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
@@ -165,13 +165,13 @@
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 1,
               "Title": "VulkanApp.hxx",
               "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\VulkanApp.hxx",
               "RelativeDocumentMoniker": "DDDDD_Engine\\VulkanApp.hxx",
               "ToolTip": "C:\\DDDDD_Engine\\DDDDD_Engine\\VulkanApp.hxx",
               "RelativeToolTip": "DDDDD_Engine\\VulkanApp.hxx",
-              "ViewState": "AQIAAEAAAACAmZmZmdkhwEcAAAAdAAAA",
+              "ViewState": "AQIAADoAAACAmZmZmdkhwEcAAAAZAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2024-06-09T07:24:36.61Z",
               "IsPinned": true,
@@ -185,7 +185,7 @@
               "RelativeDocumentMoniker": "DDDDD_Engine\\VulkanApp.cxx",
               "ToolTip": "C:\\DDDDD_Engine\\DDDDD_Engine\\VulkanApp.cxx",
               "RelativeToolTip": "DDDDD_Engine\\VulkanApp.cxx",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAwAAAAPAAAA",
+              "ViewState": "AQIAAAEAAAAAAAAAAAAEwAoAAAAOAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2024-06-09T07:40:09.356Z",
               "IsPinned": true,
@@ -297,7 +297,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "SingletonsMng.hxx",
               "DocumentMoniker": "C:\\DDDDD_Engine\\DDDDD_Engine\\SingletonsMng.hxx",
               "RelativeDocumentMoniker": "DDDDD_Engine\\SingletonsMng.hxx",
@@ -306,8 +306,7 @@
               "ViewState": "AQIAACUAAAAAAAAAAAAUwD0AAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2024-06-09T11:37:20.943Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Bookmark",
@@ -327,7 +326,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "vulkan.hpp",
               "DocumentMoniker": "C:\\VulkanSDK\\1.3.283.0\\Include\\vulkan\\vulkan.hpp",
               "RelativeDocumentMoniker": "..\\VulkanSDK\\1.3.283.0\\Include\\vulkan\\vulkan.hpp",
@@ -335,8 +334,7 @@
               "RelativeToolTip": "..\\VulkanSDK\\1.3.283.0\\Include\\vulkan\\vulkan.hpp",
               "ViewState": "AQIAAJcZAAAAAAAAAAAjwKQZAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-07-01T13:21:37.796Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-07-01T13:21:37.796Z"
             },
             {
               "$type": "Document",
