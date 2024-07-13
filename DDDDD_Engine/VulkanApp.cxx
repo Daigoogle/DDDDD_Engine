@@ -6,6 +6,14 @@
 #include <vulkan/vulkan.h>
 #include "SDLApp.hxx"
 
+struct Vertex {
+    float x, y;
+};
+std::vector<Vertex> vertices = {
+    Vertex{ 0.2f, -0.5f },
+    Vertex{ 0.5f,  0.5f },
+    Vertex{-0.5f,  0.8f },
+};
 
 VulkanApp::VulkanApp()
     : SingletonBase(UPDATE_ORDER::SECOND_UPDATE)
@@ -17,6 +25,8 @@ VulkanApp::VulkanApp()
 
 VulkanApp::~VulkanApp()
 {
+
+    m_Device->unmapMemory(vertexBufMemory.get());
     m_graphicsQueue.waitIdle();
     m_CmdBufs.clear();
     m_swapchainImageViews.clear();
@@ -155,6 +165,53 @@ bool VulkanApp::Init()
 
     m_graphicsQueue = m_Device->getQueue(graphicsQueueFamilyIndex, 0);
 
+
+    vk::BufferCreateInfo vertBufferCreateInfo;
+    vertBufferCreateInfo.size = sizeof(Vertex) * vertices.size();
+    vertBufferCreateInfo.usage = vk::BufferUsageFlagBits::eVertexBuffer;
+    vertBufferCreateInfo.sharingMode = vk::SharingMode::eExclusive;
+
+    vk::PhysicalDeviceMemoryProperties memProps = physicalDevice.getMemoryProperties();
+
+    vertexBuf = m_Device->createBufferUnique(vertBufferCreateInfo);
+
+    vk::MemoryRequirements vertexBufMemReq = m_Device->getBufferMemoryRequirements(vertexBuf.get());
+
+    vk::MemoryAllocateInfo vertexBufMemAllocInfo;
+    vertexBufMemAllocInfo.allocationSize = vertexBufMemReq.size;
+
+    bool suitableMemoryTypeFound = false;
+    for (uint32_t i = 0; i < memProps.memoryTypeCount; i++) {
+        if (vertexBufMemReq.memoryTypeBits & (1 << i) &&
+            (memProps.memoryTypes[i].propertyFlags & (vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent))) {
+            vertexBufMemAllocInfo.memoryTypeIndex = i;
+            suitableMemoryTypeFound = true;
+            break;
+        }
+    }
+    if (!suitableMemoryTypeFound) {
+        std::cerr << "適切なメモリタイプが存在しません。" << std::endl;
+        return -1;
+    }
+
+    vertexBufMemory = m_Device->allocateMemoryUnique(vertexBufMemAllocInfo);
+
+    m_Device->bindBufferMemory(vertexBuf.get(), vertexBufMemory.get(), 0);
+
+    void* vertexBufMem = m_Device->mapMemory(vertexBufMemory.get(), 0, sizeof(Vertex) * vertices.size());
+
+    std::memcpy(vertexBufMem, vertices.data(), sizeof(Vertex) * vertices.size());
+
+    m_Device->flushMappedMemoryRanges({ vk::MappedMemoryRange(vertexBufMemory.get(), 0, sizeof(Vertex) * vertices.size()) });
+
+    vertexInputDescription[0].binding = 0;
+    vertexInputDescription[0].location = 0;
+    vertexInputDescription[0].format = vk::Format::eR32G32Sfloat;
+    vertexInputDescription[0].offset = 0;
+    vertexBindingDescription[0].binding = 0;
+    vertexBindingDescription[0].stride = sizeof(Vertex);
+    vertexBindingDescription[0].inputRate = vk::VertexInputRate::eVertex;
+
     vk::SurfaceCapabilitiesKHR surfaceCapabilities = physicalDevice.getSurfaceCapabilitiesKHR(m_uSurface.get());
     std::vector<vk::SurfaceFormatKHR> surfaceFormats = physicalDevice.getSurfaceFormatsKHR(m_uSurface.get());
     std::vector<vk::PresentModeKHR> surfacePresentModes = physicalDevice.getSurfacePresentModesKHR(m_uSurface.get());
@@ -210,87 +267,6 @@ bool VulkanApp::Init()
     imgRenderedFence = m_Device->createFenceUnique(fenceCreateInfo);
 
     return true;
-}
-
-/// @brief 更新処理
-void VulkanApp::Update()
-{
-    m_Device->waitForFences({ imgRenderedFence.get() }, VK_TRUE, UINT64_MAX);
-
-    vk::ResultValue<uint32_t> acquireImgResult = m_Device->acquireNextImageKHR(m_Swapchain.get(), 1'000'000'000, m_swapchainImgSemaphore.get());
-    if (acquireImgResult.result == vk::Result::eSuboptimalKHR || acquireImgResult.result == vk::Result::eErrorOutOfDateKHR) {
-        std::cerr << "スワップチェーンを再作成します。" << std::endl;
-        RecreateSwapchain();
-        Update();
-        return;
-    }
-    if (acquireImgResult.result != vk::Result::eSuccess) {
-        std::cerr << "次フレームの要求に失敗しました。" << std::endl;
-        return ;
-    }
-
-    m_Device->resetFences({ imgRenderedFence.get() });
-
-    uint32_t imgIndex = acquireImgResult.value;
-
-    m_CmdBufs[0]->reset();
-
-    vk::CommandBufferBeginInfo cmdBeginInfo;
-    m_CmdBufs[0]->begin(cmdBeginInfo);
-
-    vk::ClearValue clearVal[1];
-    clearVal[0].color.float32[0] = 0.0f;
-    clearVal[0].color.float32[1] = 0.0f;
-    clearVal[0].color.float32[2] = 0.0f;
-    clearVal[0].color.float32[3] = 1.0f;
-
-    vk::RenderPassBeginInfo renderpassBeginInfo;
-    renderpassBeginInfo.renderPass = m_Renderpass.get();
-    renderpassBeginInfo.framebuffer = m_swapchainFramebufs[imgIndex].get();
-    renderpassBeginInfo.renderArea = vk::Rect2D({ 0,0 }, { SDLApp::GetInstance().GetWndWidth() , SDLApp::GetInstance().GetWndHeight() });
-    renderpassBeginInfo.clearValueCount = 1;
-    renderpassBeginInfo.pClearValues = clearVal;
-
-    m_CmdBufs[0]->beginRenderPass(renderpassBeginInfo, vk::SubpassContents::eInline);
-
-    m_CmdBufs[0]->bindPipeline(vk::PipelineBindPoint::eGraphics, m_Pipeline.get());
-    m_CmdBufs[0]->draw(3, 1, 0, 0);
-
-    m_CmdBufs[0]->endRenderPass();
-
-    m_CmdBufs[0]->end();
-
-    vk::CommandBuffer submitCmdBuf[1] = { m_CmdBufs[0].get() };
-    vk::SubmitInfo submitInfo;
-    submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = submitCmdBuf;
-
-    vk::Semaphore renderwaitSemaphores[] = { m_swapchainImgSemaphore.get() };
-    vk::PipelineStageFlags renderwaitStages[] = { vk::PipelineStageFlagBits::eColorAttachmentOutput };
-    submitInfo.waitSemaphoreCount = 1;
-    submitInfo.pWaitSemaphores = renderwaitSemaphores;
-    submitInfo.pWaitDstStageMask = renderwaitStages;
-
-    vk::Semaphore renderSignalSemaphores[] = { imgRenderedSemaphorne.get() };
-    submitInfo.signalSemaphoreCount = 1;
-    submitInfo.pSignalSemaphores = renderSignalSemaphores;
-
-    m_graphicsQueue.submit({ submitInfo }, imgRenderedFence.get());
-
-    vk::PresentInfoKHR presentInfo;
-
-    auto presentSwapchains = { m_Swapchain.get() };
-    auto imgIndices = { imgIndex };
-
-    presentInfo.swapchainCount = static_cast<uint32_t>(presentSwapchains.size());
-    presentInfo.pSwapchains = presentSwapchains.begin();
-    presentInfo.pImageIndices = imgIndices.begin();
-
-    vk::Semaphore presenWaitSemaphores[] = { imgRenderedSemaphorne.get() };
-    presentInfo.waitSemaphoreCount = 1;
-    presentInfo.pWaitSemaphores = presenWaitSemaphores;
-    
-    m_graphicsQueue.presentKHR(presentInfo);
 }
 
 void VulkanApp::RecreateSwapchain()
@@ -361,7 +337,7 @@ void VulkanApp::RecreateSwapchain()
     viewports[0].y = 0.0;
     viewports[0].minDepth = 0.0;
     viewports[0].maxDepth = 1.0;
-    viewports[0].width = static_cast<float>( screenWidth);
+    viewports[0].width = static_cast<float>(screenWidth);
     viewports[0].height = static_cast<float>(screenHeight);
 
     vk::Rect2D scissors[1];
@@ -375,10 +351,10 @@ void VulkanApp::RecreateSwapchain()
     viewportState.pScissors = scissors;
 
     vk::PipelineVertexInputStateCreateInfo vertexInputInfo;
-    vertexInputInfo.vertexAttributeDescriptionCount = 0;
-    vertexInputInfo.pVertexAttributeDescriptions = nullptr;
-    vertexInputInfo.vertexBindingDescriptionCount = 0;
-    vertexInputInfo.pVertexBindingDescriptions = nullptr;
+    vertexInputInfo.vertexBindingDescriptionCount = 1;
+    vertexInputInfo.pVertexBindingDescriptions = vertexBindingDescription;
+    vertexInputInfo.vertexAttributeDescriptionCount = 1;
+    vertexInputInfo.pVertexAttributeDescriptions = vertexInputDescription;
 
     vk::PipelineInputAssemblyStateCreateInfo inputAssembly;
     inputAssembly.topology = vk::PrimitiveTopology::eTriangleList;
@@ -475,7 +451,7 @@ void VulkanApp::RecreateSwapchain()
     pipelineCreateInfo.pStages = shaderStage;
 
     m_Pipeline = m_Device->createGraphicsPipelineUnique(nullptr, pipelineCreateInfo).value;
-    
+
     // イメージビューの作成
     m_swapchainImageViews.resize(swapchainImages.size());
 
@@ -514,4 +490,86 @@ void VulkanApp::RecreateSwapchain()
 
         m_swapchainFramebufs[i] = m_Device->createFramebufferUnique(frameBufCreateInfo);
     }
+}
+
+/// @brief 更新処理
+void VulkanApp::Update()
+{
+    m_Device->waitForFences({ imgRenderedFence.get() }, VK_TRUE, UINT64_MAX);
+
+    vk::ResultValue<uint32_t> acquireImgResult = m_Device->acquireNextImageKHR(m_Swapchain.get(), 1'000'000'000, m_swapchainImgSemaphore.get());
+    if (acquireImgResult.result == vk::Result::eSuboptimalKHR || acquireImgResult.result == vk::Result::eErrorOutOfDateKHR) {
+        std::cerr << "スワップチェーンを再作成します。" << std::endl;
+        RecreateSwapchain();
+        Update();
+        return;
+    }
+    if (acquireImgResult.result != vk::Result::eSuccess) {
+        std::cerr << "次フレームの要求に失敗しました。" << std::endl;
+        return ;
+    }
+
+    m_Device->resetFences({ imgRenderedFence.get() });
+
+    uint32_t imgIndex = acquireImgResult.value;
+
+    m_CmdBufs[0]->reset();
+
+    vk::CommandBufferBeginInfo cmdBeginInfo;
+    m_CmdBufs[0]->begin(cmdBeginInfo);
+
+    vk::ClearValue clearVal[1];
+    clearVal[0].color.float32[0] = 0.0f;
+    clearVal[0].color.float32[1] = 0.0f;
+    clearVal[0].color.float32[2] = 1.0f;
+    clearVal[0].color.float32[3] = 1.0f;
+
+    vk::RenderPassBeginInfo renderpassBeginInfo;
+    renderpassBeginInfo.renderPass = m_Renderpass.get();
+    renderpassBeginInfo.framebuffer = m_swapchainFramebufs[imgIndex].get();
+    renderpassBeginInfo.renderArea = vk::Rect2D({ 0,0 }, { SDLApp::GetInstance().GetWndWidth() , SDLApp::GetInstance().GetWndHeight() });
+    renderpassBeginInfo.clearValueCount = 1;
+    renderpassBeginInfo.pClearValues = clearVal;
+
+    m_CmdBufs[0]->beginRenderPass(renderpassBeginInfo, vk::SubpassContents::eInline);
+    
+    m_CmdBufs[0]->bindPipeline(vk::PipelineBindPoint::eGraphics, m_Pipeline.get());
+    m_CmdBufs[0]->bindVertexBuffers(0, { vertexBuf.get() }, { 0 }); // 追加
+    m_CmdBufs[0]->draw(3, 1, 0, 0);
+    
+    m_CmdBufs[0]->endRenderPass();
+
+    m_CmdBufs[0]->end();
+
+    vk::CommandBuffer submitCmdBuf[1] = { m_CmdBufs[0].get() };
+    vk::SubmitInfo submitInfo;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = submitCmdBuf;
+
+    vk::Semaphore renderwaitSemaphores[] = { m_swapchainImgSemaphore.get() };
+    vk::PipelineStageFlags renderwaitStages[] = { vk::PipelineStageFlagBits::eColorAttachmentOutput };
+    submitInfo.waitSemaphoreCount = 1;
+    submitInfo.pWaitSemaphores = renderwaitSemaphores;
+    submitInfo.pWaitDstStageMask = renderwaitStages;
+
+    vk::Semaphore renderSignalSemaphores[] = { imgRenderedSemaphorne.get() };
+    submitInfo.signalSemaphoreCount = 1;
+    submitInfo.pSignalSemaphores = renderSignalSemaphores;
+
+    m_graphicsQueue.submit({ submitInfo }, imgRenderedFence.get());
+
+    vk::PresentInfoKHR presentInfo;
+
+    auto presentSwapchains = { m_Swapchain.get() };
+    auto imgIndices = { imgIndex };
+
+    presentInfo.swapchainCount = static_cast<uint32_t>(presentSwapchains.size());
+    presentInfo.pSwapchains = presentSwapchains.begin();
+    presentInfo.pImageIndices = imgIndices.begin();
+
+    vk::Semaphore presenWaitSemaphores[] = { imgRenderedSemaphorne.get() };
+    presentInfo.waitSemaphoreCount = 1;
+    presentInfo.pWaitSemaphores = presenWaitSemaphores;
+    
+    m_graphicsQueue.presentKHR(presentInfo);
 }

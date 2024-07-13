@@ -167,6 +167,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Render.cxx" />
     <ClCompile Include="RenderMgr.cxx" />
+    <ClCompile Include="RenderTest.cxx" />
     <ClCompile Include="SceneBase.cxx" />
     <ClCompile Include="SceneMng.cxx" />
     <ClCompile Include="SDLApp.cxx" />
@@ -187,6 +188,7 @@
     <ClInclude Include="main.h" />
     <ClInclude Include="Render.hxx" />
     <ClInclude Include="RenderMgr.hxx" />
+    <ClInclude Include="RenderTest.hxx" />
     <ClInclude Include="SceneBase.hxx">
       <SubType>
       </SubType>

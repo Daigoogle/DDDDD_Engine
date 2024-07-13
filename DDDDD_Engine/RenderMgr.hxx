@@ -10,6 +10,12 @@
 
 // =-=-= インクルード部 =-=-=
 #include "SingletonsMng.hxx"
+#include <queue>
+
+struct Vertex
+{
+	float x, y;
+};
 
 class RenderMgr: public SingletonBase
 {

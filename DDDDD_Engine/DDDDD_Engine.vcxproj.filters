@@ -109,6 +109,9 @@
     <ClCompile Include="Component.cxx">
       <Filter>Base</Filter>
     </ClCompile>
+    <ClCompile Include="RenderTest.cxx">
+      <Filter>Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SingletonsMng.hxx">
@@ -161,6 +164,9 @@
     </ClInclude>
     <ClInclude Include="CameraComp.hxx">
       <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderTest.hxx">
+      <Filter>Graphics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

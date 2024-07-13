@@ -10,6 +10,7 @@
 
 // =-=-= インクルード部 =-=-=
 #include "RenderMgr.hxx"
+#include <vector>
 
 class Render
 {
@@ -18,8 +19,9 @@ public:
 	Render();
 	virtual ~Render();
 
-private:
-
+	
+protected:
+	std::vector<Vertex> m_Vertex;
 };
 
 #endif // !_____Render_HXX_____

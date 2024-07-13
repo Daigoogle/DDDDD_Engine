@@ -44,6 +44,8 @@ private:
 	vk::SurfaceFormatKHR swapchainFormat;
 	vk::PresentModeKHR swapchainPresentMode;
 	std::vector<vk::Image> swapchainImages;
+	vk::VertexInputBindingDescription vertexBindingDescription[1];
+	vk::VertexInputAttributeDescription vertexInputDescription[1];
 
 	std::vector<const char*>				m_extensions;
 	std::vector<const char*>				m_Layers;
@@ -66,6 +68,8 @@ private:
 	vk::UniqueSemaphore			imgRenderedSemaphorne;
 	vk::UniqueSemaphore			m_swapchainImgSemaphore;
 	vk::UniqueFence				imgRenderedFence;
+	vk::UniqueDeviceMemory		vertexBufMemory;
+	vk::UniqueBuffer			vertexBuf;
 };
 
 #endif // !_____Vulkan_HXX_____
