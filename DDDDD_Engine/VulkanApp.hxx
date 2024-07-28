@@ -30,13 +30,14 @@ public:
 	/// @brief 初期化処理
 	/// @return 成功したらtrue
 	bool Init() override;
-
 	/// @brief 更新処理
 	void Update() override;
 
+	VkDevice GetDevice() { return m_Device.get(); }
+private:
 	/// @brief スワップチェインの再作成
 	void RecreateSwapchain();
-private:
+
 	SDL_Window*		m_Window;
 	unsigned int	m_extension_count;
 
@@ -72,6 +73,7 @@ private:
 	vk::UniqueDeviceMemory		indexBufMemory;
 	vk::UniqueBuffer			vertexBuf;
 	vk::UniqueBuffer			indexBuf;
+	vk::UniqueDeviceMemory stagingBufMemory;
 };
 
 #endif // !_____Vulkan_HXX_____

@@ -5,7 +5,7 @@
 
 SceneBase::~SceneBase()
 {
-	GameObjectMng::GetInstance().DeleteObjects(this);
+	GameObjectMng::GetInstance().DeleteSceneObjects(this);
 }
 
 GameObject SceneBase::MakeObject()

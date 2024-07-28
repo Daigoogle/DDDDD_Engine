@@ -53,12 +53,17 @@ private:
 		return nullptr;
 	}
 
+	void Delete();
+
 private:
+	static uint32_t ms_ObjectID;
+
 	std::string m_Name;					// 名前
 	unsigned m_Tag;						// タグ
 	bool m_IsActive;					// アクティブかどうか
+	bool m_IsDelete;					// 削除フラグ
 	std::list<std::unique_ptr<Component>> m_Components;	// コンポーネント
-	unsigned __int64 m_ObjectID;		// ID
+	uint32_t m_ObjectID;		// ID
 	std::list<GameObjectInst*> m_childs;// 子オブジェクト
 	GameObjectInst* m_pParent;			// 親オブジェクト
 	SceneBase* m_pScene;				// シーン

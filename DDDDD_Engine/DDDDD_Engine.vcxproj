@@ -171,6 +171,7 @@
     <ClCompile Include="SceneBase.cxx" />
     <ClCompile Include="SceneMng.cxx" />
     <ClCompile Include="SDLApp.cxx" />
+    <ClCompile Include="shader.cxx" />
     <ClCompile Include="SingletonsMng.cxx" />
     <ClCompile Include="Supervision.cxx" />
     <ClCompile Include="Swapchain.cxx" />
@@ -195,6 +196,7 @@
     </ClInclude>
     <ClInclude Include="SceneMng.hxx" />
     <ClInclude Include="SDLApp.hxx" />
+    <ClInclude Include="shader.hxx" />
     <ClInclude Include="SingletonsMng.hxx" />
     <ClInclude Include="Swapchain.hxx" />
     <ClInclude Include="TitleScene.hxx" />

@@ -201,9 +201,133 @@ bool VulkanApp::Init()
     }
 
     vertexBufMemory = m_Device->allocateMemoryUnique(vertexBufMemAllocInfo);
+    m_Device->bindBufferMemory(vertexBuf.get(), vertexBufMemory.get(), 0);    
+    {
+        vk::BufferCreateInfo stagingBufferCreateInfo;
+        stagingBufferCreateInfo.size = sizeof(Vertex) * vertices.size();
+        stagingBufferCreateInfo.usage = vk::BufferUsageFlagBits::eTransferSrc;
+        stagingBufferCreateInfo.sharingMode = vk::SharingMode::eExclusive;
 
-    m_Device->bindBufferMemory(vertexBuf.get(), vertexBufMemory.get(), 0);
+        vk::UniqueBuffer stagingBuf = m_Device->createBufferUnique(stagingBufferCreateInfo);
 
+        vk::MemoryRequirements stagingBufMemReq = m_Device->getBufferMemoryRequirements(stagingBuf.get());
+
+        vk::MemoryAllocateInfo stagingBufMemAllocInfo;
+        stagingBufMemAllocInfo.allocationSize = stagingBufMemReq.size;
+
+        suitableMemoryTypeFound = false;
+        for (uint32_t i = 0; i < memProps.memoryTypeCount; i++) {
+            if (stagingBufMemReq.memoryTypeBits & (1 << i) && (memProps.memoryTypes[i].propertyFlags & vk::MemoryPropertyFlagBits::eHostVisible)) {
+                stagingBufMemAllocInfo.memoryTypeIndex = i;
+                suitableMemoryTypeFound = true;
+                break;
+            }
+        }
+        if (!suitableMemoryTypeFound) {
+            std::cerr << "適切なメモリタイプが存在しません。" << std::endl;
+            return false;
+        }
+
+        vk::UniqueDeviceMemory stagingBufMemory = m_Device->allocateMemoryUnique(stagingBufMemAllocInfo);
+
+        m_Device->bindBufferMemory(stagingBuf.get(), stagingBufMemory.get(), 0);
+
+        void* pStagingBufMem = m_Device->mapMemory(stagingBufMemory.get(), 0, sizeof(Vertex) * vertices.size());
+
+        std::memcpy(pStagingBufMem, vertices.data(), sizeof(Vertex) * vertices.size());
+
+        vk::MappedMemoryRange flushMemoryRange;
+        flushMemoryRange.memory = stagingBufMemory.get();
+        flushMemoryRange.offset = 0;
+        flushMemoryRange.size = sizeof(Vertex) * vertices.size();
+
+        m_Device->flushMappedMemoryRanges({ flushMemoryRange });
+
+        m_Device->unmapMemory(stagingBufMemory.get());
+
+        vk::CommandPoolCreateInfo tmpCmdPoolCreateInfo;
+        tmpCmdPoolCreateInfo.queueFamilyIndex = graphicsQueueFamilyIndex;
+        tmpCmdPoolCreateInfo.flags = vk::CommandPoolCreateFlagBits::eTransient;
+        vk::UniqueCommandPool tmpCmdPool = m_Device->createCommandPoolUnique(tmpCmdPoolCreateInfo);
+
+        vk::CommandBufferAllocateInfo tmpCmdBufAllocInfo;
+        tmpCmdBufAllocInfo.commandPool = tmpCmdPool.get();
+        tmpCmdBufAllocInfo.commandBufferCount = 1;
+        tmpCmdBufAllocInfo.level = vk::CommandBufferLevel::ePrimary;
+        std::vector<vk::UniqueCommandBuffer> tmpCmdBufs = m_Device->allocateCommandBuffersUnique(tmpCmdBufAllocInfo);
+
+        vk::BufferCopy bufCopy;
+        bufCopy.srcOffset = 0;
+        bufCopy.dstOffset = 0;
+        bufCopy.size = sizeof(Vertex) * vertices.size();
+
+        vk::CommandBufferBeginInfo cmdBeginInfo;
+        cmdBeginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
+
+        tmpCmdBufs[0]->begin(cmdBeginInfo);
+        tmpCmdBufs[0]->copyBuffer(stagingBuf.get(), vertexBuf.get(), { bufCopy });
+        tmpCmdBufs[0]->end();
+
+        vk::CommandBuffer submitCmdBuf[1] = { tmpCmdBufs[0].get() };
+        vk::SubmitInfo submitInfo;
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pCommandBuffers = submitCmdBuf;
+
+        m_graphicsQueue.submit({ submitInfo });
+        m_graphicsQueue.waitIdle();
+    }
+    //// バッファへの書き込み
+    //void* vertexBufMem = m_Device->mapMemory(vertexBufMemory.get(), 0, sizeof(Vertex) * vertices.size());
+    //
+    //std::memcpy(vertexBufMem, vertices.data(), sizeof(Vertex) * vertices.size());
+    //
+    //m_Device->flushMappedMemoryRanges({ vk::MappedMemoryRange(vertexBufMemory.get(), 0, sizeof(Vertex) * vertices.size()) });
+    //m_Device->unmapMemory(vertexBufMemory.get());
+    vertexBindingDescription[0].binding = 0;
+    vertexBindingDescription[0].stride = sizeof(Vertex);
+    vertexBindingDescription[0].inputRate = vk::VertexInputRate::eVertex;
+    
+    vertexInputDescription[0].binding = 0;
+    vertexInputDescription[0].location = 0;
+    vertexInputDescription[0].format = vk::Format::eR32G32Sfloat;
+    vertexInputDescription[0].offset = offsetof(Vertex,Pos);
+    vertexInputDescription[1].binding = 0;
+    vertexInputDescription[1].location = 1;
+    vertexInputDescription[1].format = vk::Format::eR32G32B32Sfloat;
+    vertexInputDescription[1].offset = offsetof(Vertex,Color);
+    //vertexInputDescription[2].binding = 0;
+    //vertexInputDescription[2].location = 2;
+    //vertexInputDescription[2].format = vk::Format::eR32G32B32Sfloat;
+    //vertexInputDescription[2].offset = offsetof(Vertex, Normal);
+
+    /// ステージングバッファの作成
+    vk::BufferCreateInfo stagingBufferCreateInfo;
+    stagingBufferCreateInfo.size = sizeof(Vertex) * vertices.size();
+    stagingBufferCreateInfo.usage = vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eTransferDst; // eTransferDstを追加
+    stagingBufferCreateInfo.sharingMode = vk::SharingMode::eExclusive;
+
+    vk::UniqueBuffer stagingBuf = m_Device->createBufferUnique(stagingBufferCreateInfo);
+
+    vk::MemoryRequirements stagingBufMemReq = m_Device->getBufferMemoryRequirements(stagingBuf.get());
+
+    vk::MemoryAllocateInfo stagingBufMemAllocInfo;
+    stagingBufMemAllocInfo.allocationSize = stagingBufMemReq.size;
+
+    suitableMemoryTypeFound = false;
+    for (uint32_t i = 0; i < memProps.memoryTypeCount; i++) {
+        if (stagingBufMemReq.memoryTypeBits & (1 << i) &&
+            (memProps.memoryTypes[i].propertyFlags & vk::MemoryPropertyFlagBits::eDeviceLocal)) {   // eDeviceLocalに変更
+            stagingBufMemAllocInfo.memoryTypeIndex = i;
+            suitableMemoryTypeFound = true;
+            break;
+        }
+    }
+    if (!suitableMemoryTypeFound) {
+        std::cerr << "適切なメモリタイプが存在しません。" << std::endl;
+        return false;
+    }
+    stagingBufMemory = m_Device->allocateMemoryUnique(stagingBufMemAllocInfo);
+    m_Device->bindBufferMemory(stagingBuf.get(), stagingBufMemory.get(), 0);
 
     /// インデックスバッファの作成
     vk::BufferCreateInfo indexBufferCreateInfo;
@@ -229,55 +353,103 @@ bool VulkanApp::Init()
     }
     if (!suitableMemoryTypeFound) {
         std::cerr << "適切なメモリタイプが存在しません。" << std::endl;
-        return -1;
+        return false;
     }
 
     indexBufMemory = m_Device->allocateMemoryUnique(indexBufMemAllocInfo);
 
     m_Device->bindBufferMemory(indexBuf.get(), indexBufMemory.get(), 0);
+    {
+        vk::BufferCreateInfo stagingBufferCreateInfo;
+        stagingBufferCreateInfo.size = sizeof(uint16_t) * indices.size();
+        stagingBufferCreateInfo.usage = vk::BufferUsageFlagBits::eTransferSrc;
+        stagingBufferCreateInfo.sharingMode = vk::SharingMode::eExclusive;
 
+        vk::UniqueBuffer stagingBuf = m_Device->createBufferUnique(stagingBufferCreateInfo);
 
-    // バッファへの書き込み
-    void* vertexBufMem = m_Device->mapMemory(vertexBufMemory.get(), 0, sizeof(Vertex) * vertices.size());
+        vk::MemoryRequirements stagingBufMemReq = m_Device->getBufferMemoryRequirements(stagingBuf.get());
 
-    std::memcpy(vertexBufMem, vertices.data(), sizeof(Vertex) * vertices.size());
+        vk::MemoryAllocateInfo stagingBufMemAllocInfo;
+        stagingBufMemAllocInfo.allocationSize = stagingBufMemReq.size;
 
-    m_Device->flushMappedMemoryRanges({ vk::MappedMemoryRange(vertexBufMemory.get(), 0, sizeof(Vertex) * vertices.size()) });
-    m_Device->unmapMemory(vertexBufMemory.get());
+        suitableMemoryTypeFound = false;
+        for (uint32_t i = 0; i < memProps.memoryTypeCount; i++) {
+            if (stagingBufMemReq.memoryTypeBits & (1 << i) && (memProps.memoryTypes[i].propertyFlags & vk::MemoryPropertyFlagBits::eHostVisible)) {
+                stagingBufMemAllocInfo.memoryTypeIndex = i;
+                suitableMemoryTypeFound = true;
+                break;
+            }
+        }
+        if (!suitableMemoryTypeFound) {
+            std::cerr << "適切なメモリタイプが存在しません。" << std::endl;
+            return false;
+        }
 
-    vertexBindingDescription[0].binding = 0;
-    vertexBindingDescription[0].stride = sizeof(Vertex);
-    vertexBindingDescription[0].inputRate = vk::VertexInputRate::eVertex;
+        vk::UniqueDeviceMemory stagingBufMemory = m_Device->allocateMemoryUnique(stagingBufMemAllocInfo);
 
-    vertexInputDescription[0].binding = 0;
-    vertexInputDescription[0].location = 0;
-    vertexInputDescription[0].format = vk::Format::eR32G32Sfloat;
-    vertexInputDescription[0].offset = offsetof(Vertex,Pos);
-    vertexInputDescription[1].binding = 0;
-    vertexInputDescription[1].location = 1;
-    vertexInputDescription[1].format = vk::Format::eR32G32B32Sfloat;
-    vertexInputDescription[1].offset = offsetof(Vertex,Color);
-    //vertexInputDescription[2].binding = 0;
-    //vertexInputDescription[2].location = 2;
-    //vertexInputDescription[2].format = vk::Format::eR32G32B32Sfloat;
-    //vertexInputDescription[2].offset = offsetof(Vertex, Normal);
+        m_Device->bindBufferMemory(stagingBuf.get(), stagingBufMemory.get(), 0);
 
-    // バッファへの書き込み（インデックス編）
-    void* indexBufMem = m_Device->mapMemory(indexBufMemory.get(), 0, sizeof(uint16_t) * indices.size());
+        void* pStagingBufMem = m_Device->mapMemory(stagingBufMemory.get(), 0, sizeof(uint16_t) * indices.size());
 
-    std::memcpy(indexBufMem, indices.data(), sizeof(uint16_t) * indices.size());
+        std::memcpy(pStagingBufMem, indices.data(), sizeof(uint16_t) * indices.size());
 
-    m_Device->flushMappedMemoryRanges(vk::MappedMemoryRange{ indexBufMemory.get(), 0, sizeof(uint16_t) * indices.size() });
-    m_Device->unmapMemory(indexBufMemory.get());
+        vk::MappedMemoryRange flushMemoryRange;
+        flushMemoryRange.memory = stagingBufMemory.get();
+        flushMemoryRange.offset = 0;
+        flushMemoryRange.size = sizeof(uint16_t) * indices.size();
+
+        m_Device->flushMappedMemoryRanges({ flushMemoryRange });
+
+        m_Device->unmapMemory(stagingBufMemory.get());
+
+        vk::CommandPoolCreateInfo tmpCmdPoolCreateInfo;
+        tmpCmdPoolCreateInfo.queueFamilyIndex = graphicsQueueFamilyIndex;
+        tmpCmdPoolCreateInfo.flags = vk::CommandPoolCreateFlagBits::eTransient;
+        vk::UniqueCommandPool tmpCmdPool = m_Device->createCommandPoolUnique(tmpCmdPoolCreateInfo);
+
+        vk::CommandBufferAllocateInfo tmpCmdBufAllocInfo;
+        tmpCmdBufAllocInfo.commandPool = tmpCmdPool.get();
+        tmpCmdBufAllocInfo.commandBufferCount = 1;
+        tmpCmdBufAllocInfo.level = vk::CommandBufferLevel::ePrimary;
+        std::vector<vk::UniqueCommandBuffer> tmpCmdBufs = m_Device->allocateCommandBuffersUnique(tmpCmdBufAllocInfo);
+
+        vk::BufferCopy bufCopy;
+        bufCopy.srcOffset = 0;
+        bufCopy.dstOffset = 0;
+        bufCopy.size = sizeof(uint16_t) * indices.size();
+
+        vk::CommandBufferBeginInfo cmdBeginInfo;
+        cmdBeginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
+
+        tmpCmdBufs[0]->begin(cmdBeginInfo);
+        tmpCmdBufs[0]->copyBuffer(stagingBuf.get(), indexBuf.get(), { bufCopy });
+        tmpCmdBufs[0]->end();
+
+        vk::CommandBuffer submitCmdBuf[1] = { tmpCmdBufs[0].get() };
+        vk::SubmitInfo submitInfo;
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pCommandBuffers = submitCmdBuf;
+
+        m_graphicsQueue.submit({ submitInfo });
+        m_graphicsQueue.waitIdle();
+    }
+
+    //// バッファへの書き込み（インデックス編）
+    //void* indexBufMem = m_Device->mapMemory(indexBufMemory.get(), 0, sizeof(uint16_t) * indices.size());
+    //
+    //std::memcpy(indexBufMem, indices.data(), sizeof(uint16_t) * indices.size());
+    //
+    //m_Device->flushMappedMemoryRanges(vk::MappedMemoryRange{ indexBufMemory.get(), 0, sizeof(uint16_t) * indices.size() });
+    //m_Device->unmapMemory(indexBufMemory.get());
 
 
     vk::SurfaceCapabilitiesKHR surfaceCapabilities = physicalDevice.getSurfaceCapabilitiesKHR(m_uSurface.get());
     std::vector<vk::SurfaceFormatKHR> surfaceFormats = physicalDevice.getSurfaceFormatsKHR(m_uSurface.get());
     std::vector<vk::PresentModeKHR> surfacePresentModes = physicalDevice.getSurfacePresentModesKHR(m_uSurface.get());
-
+    
     swapchainFormat = surfaceFormats[0];
     swapchainPresentMode = surfacePresentModes[0];
-
+     
     vk::SwapchainCreateInfoKHR swapchainCreateInfo;
     swapchainCreateInfo.surface = m_uSurface.get();
     swapchainCreateInfo.minImageCount = surfaceCapabilities.minImageCount + 1;
@@ -599,7 +771,7 @@ void VulkanApp::Update()
     m_CmdBufs[0]->bindPipeline(vk::PipelineBindPoint::eGraphics, m_Pipeline.get());
     m_CmdBufs[0]->bindVertexBuffers(0, { vertexBuf.get() }, { 0 }); // 追加
     m_CmdBufs[0]->bindIndexBuffer(indexBuf.get(), 0, vk::IndexType::eUint16);
-    m_CmdBufs[0]->drawIndexed(indices.size(), 1, 0, 0, 0);
+    m_CmdBufs[0]->drawIndexed(static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
     
     m_CmdBufs[0]->endRenderPass();
 

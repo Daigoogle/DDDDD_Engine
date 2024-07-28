@@ -10,8 +10,9 @@
 
 // =-=-= インクルード部 =-=-=
 #include <memory>
-#include <deque>
-#include <map>
+#include <unordered_map>
+#include <vector>
+#include <queue>
 
 #include "SingletonsMng.hxx"
 
@@ -37,26 +38,30 @@ public:
 	/// @brief 更新処理
 	void Update() override;
 
-	/// @brief 生成オブジェクトの初期化と登録
-	void InitObjects();
-	/// @brief 現シーンのオブジェクトの更新
-	/// @param pScene 現在のシーン
-	void UpdateObjects(SceneBase* pScene);
-	/// @brief シーンのオブジェクトの解放
-	/// @param pScene 解放するシーン
-	void DeleteObjects(SceneBase* pScene);
-
 	/// @brief オブジェクトの作成
 	/// @param pScene 作成するオブジェクトの所属シーン
 	/// @return 作成したオブジェクト
 	GameObject MakeObject(SceneBase* pScene);
 
+	/// @brief シーンのオブジェクトの解放
+	/// @param pScene 解放するシーン
+	void DeleteSceneObjects(SceneBase* pScene);
+
 private:
+	/// @brief 生成オブジェクトの初期化と登録
+	void InitObjects();
+	/// @brief 現シーンのオブジェクトの更新
+	/// @param pScene 現在のシーン
+	void UpdateObjects(SceneBase* pScene);
+
+	void DeleteObject();
+
 	/// @brief オブジェクトのロードキュー
-	std::map<SceneBase* ,std::deque<GameObjectInst*>> m_ObjectsLoadQueue;
+	std::unordered_map<SceneBase* ,std::queue<GameObjectInst*>> m_ObjectsLoadQueue;
 	/// @brief オブジェクトの更新キュー
-	std::map<SceneBase* ,std::deque<GameObjectInst*>> m_ObjectsQueue;
-	unsigned __int64 m_LastObjectID;// 最後に割り当てたID
+	std::unordered_map<SceneBase* , std::vector<GameObjectInst*>> m_ObjectsQueue;
+	/// @brief 削除するオブジェクトのキュー
+	std::unordered_map<uint32_t,SceneBase*> m_ObjectsDeleteQueue;
 };
 
 #endif // !_____GameObjectMng_HXX_____

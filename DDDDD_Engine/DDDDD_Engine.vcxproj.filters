@@ -112,6 +112,9 @@
     <ClCompile Include="RenderTest.cxx">
       <Filter>Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="shader.cxx">
+      <Filter>Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SingletonsMng.hxx">
@@ -166,6 +169,9 @@
       <Filter>Component</Filter>
     </ClInclude>
     <ClInclude Include="RenderTest.hxx">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="shader.hxx">
       <Filter>Graphics</Filter>
     </ClInclude>
   </ItemGroup>
