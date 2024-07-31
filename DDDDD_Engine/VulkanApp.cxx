@@ -20,7 +20,11 @@ std::vector<Vertex> vertices = {
 };
 std::vector<uint16_t> indices = { 0,1,2,0,2,3 };
 
+struct SceneData {
+    fVec2 rectCenter;
+};
 
+SceneData sceneData = { fVec2{ 0.3, -0.2 } };
 
 VulkanApp::VulkanApp()
     : SingletonBase(UPDATE_ORDER::SECOND_UPDATE)
@@ -33,6 +37,9 @@ VulkanApp::VulkanApp()
 
 VulkanApp::~VulkanApp()
 {
+    m_Device->unmapMemory(uniformBufMemory.get());
+
+    descSets.clear();
     m_graphicsQueue.waitIdle();
     m_CmdBufs.clear();
     m_swapchainImageViews.clear();
@@ -174,7 +181,7 @@ bool VulkanApp::Init()
     /// 頂点バッファの作成
     vk::BufferCreateInfo vertBufferCreateInfo;
     vertBufferCreateInfo.size = sizeof(Vertex) * vertices.size();
-    vertBufferCreateInfo.usage = vk::BufferUsageFlagBits::eVertexBuffer;
+    vertBufferCreateInfo.usage = vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eTransferDst;
     vertBufferCreateInfo.sharingMode = vk::SharingMode::eExclusive;
 
     vk::PhysicalDeviceMemoryProperties memProps = physicalDevice.getMemoryProperties();
@@ -306,7 +313,7 @@ bool VulkanApp::Init()
     stagingBufferCreateInfo.usage = vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eTransferDst; // eTransferDstを追加
     stagingBufferCreateInfo.sharingMode = vk::SharingMode::eExclusive;
 
-    vk::UniqueBuffer stagingBuf = m_Device->createBufferUnique(stagingBufferCreateInfo);
+    stagingBuf = m_Device->createBufferUnique(stagingBufferCreateInfo);
 
     vk::MemoryRequirements stagingBufMemReq = m_Device->getBufferMemoryRequirements(stagingBuf.get());
 
@@ -332,7 +339,7 @@ bool VulkanApp::Init()
     /// インデックスバッファの作成
     vk::BufferCreateInfo indexBufferCreateInfo;
     indexBufferCreateInfo.size = sizeof(uint16_t) * indices.size();
-    indexBufferCreateInfo.usage = vk::BufferUsageFlagBits::eIndexBuffer;    // ここだけ注意
+    indexBufferCreateInfo.usage = vk::BufferUsageFlagBits::eIndexBuffer | vk::BufferUsageFlagBits::eTransferDst;    // ここだけ注意
     indexBufferCreateInfo.sharingMode = vk::SharingMode::eExclusive;
 
     indexBuf = m_Device->createBufferUnique(indexBufferCreateInfo);
@@ -442,32 +449,94 @@ bool VulkanApp::Init()
     //m_Device->flushMappedMemoryRanges(vk::MappedMemoryRange{ indexBufMemory.get(), 0, sizeof(uint16_t) * indices.size() });
     //m_Device->unmapMemory(indexBufMemory.get());
 
+    /// ディスクリプタセットの作成
+    vk::BufferCreateInfo uniformBufferCreateInfo;
+    uniformBufferCreateInfo.size = sizeof(SceneData);
+    uniformBufferCreateInfo.usage = vk::BufferUsageFlagBits::eUniformBuffer;
+    uniformBufferCreateInfo.sharingMode = vk::SharingMode::eExclusive;
 
-    vk::SurfaceCapabilitiesKHR surfaceCapabilities = physicalDevice.getSurfaceCapabilitiesKHR(m_uSurface.get());
+    uniformBuf = m_Device->createBufferUnique(uniformBufferCreateInfo);
+
+    vk::MemoryRequirements uniformBufMemReq = m_Device->getBufferMemoryRequirements(uniformBuf.get());
+
+    vk::MemoryAllocateInfo uniformBufMemAllocInfo;
+    uniformBufMemAllocInfo.allocationSize = uniformBufMemReq.size;
+
+    suitableMemoryTypeFound = false;
+    for (uint32_t i = 0; i < memProps.memoryTypeCount; i++) {
+        if (uniformBufMemReq.memoryTypeBits & (1 << i) &&
+            (memProps.memoryTypes[i].propertyFlags & vk::MemoryPropertyFlagBits::eHostVisible)) {
+            uniformBufMemAllocInfo.memoryTypeIndex = i;
+            suitableMemoryTypeFound = true;
+            break;
+        }
+    }
+    if (!suitableMemoryTypeFound) {
+        std::cerr << "適切なメモリタイプが存在しません。" << std::endl;
+        return -1;
+    }
+
+    uniformBufMemory = m_Device->allocateMemoryUnique(uniformBufMemAllocInfo);
+
+    m_Device->bindBufferMemory(uniformBuf.get(), uniformBufMemory.get(), 0);
+
+    pUniformBufMem = m_Device->mapMemory(uniformBufMemory.get(), 0, sizeof(SceneData));
+
+    vk::DescriptorSetLayoutBinding descSetLayoutBinding[1];
+    descSetLayoutBinding[0].binding = 0;
+    descSetLayoutBinding[0].descriptorType = vk::DescriptorType::eUniformBuffer;
+    descSetLayoutBinding[0].descriptorCount = 1;
+    descSetLayoutBinding[0].stageFlags = vk::ShaderStageFlagBits::eVertex;
+
+    vk::DescriptorSetLayoutCreateInfo descSetLayoutCreateInfo{};
+    descSetLayoutCreateInfo.bindingCount = 1;
+    descSetLayoutCreateInfo.pBindings = descSetLayoutBinding;
+
+    descSetLayout = m_Device->createDescriptorSetLayoutUnique(descSetLayoutCreateInfo);
+
+    vk::DescriptorPoolSize descPoolSize[1];
+    descPoolSize[0].type = vk::DescriptorType::eUniformBuffer;
+    descPoolSize[0].descriptorCount = 1;
+
+    vk::DescriptorPoolCreateInfo descPoolCreateInfo;
+    descPoolCreateInfo.poolSizeCount = 1;
+    descPoolCreateInfo.pPoolSizes = descPoolSize;
+    descPoolCreateInfo.maxSets = 1;
+
+    descPool = m_Device->createDescriptorPoolUnique(descPoolCreateInfo);
+
+    vk::DescriptorSetAllocateInfo descSetAllocInfo;
+
+    auto descSetLayouts = { descSetLayout.get() };
+
+    descSetAllocInfo.descriptorPool = descPool.get();
+    descSetAllocInfo.descriptorSetCount = descSetLayouts.size();
+    descSetAllocInfo.pSetLayouts = descSetLayouts.begin();
+
+    descSets = m_Device->allocateDescriptorSetsUnique(descSetAllocInfo);
+
+    vk::WriteDescriptorSet writeDescSet;
+    writeDescSet.dstSet = descSets[0].get();
+    writeDescSet.dstBinding = 0;
+    writeDescSet.dstArrayElement = 0;
+    writeDescSet.descriptorType = vk::DescriptorType::eUniformBuffer;
+
+    vk::DescriptorBufferInfo descBufInfo[1];
+    descBufInfo[0].buffer = uniformBuf.get();
+    descBufInfo[0].offset = 0;
+    descBufInfo[0].range = sizeof(SceneData);
+
+    writeDescSet.descriptorCount = 1;
+    writeDescSet.pBufferInfo = descBufInfo;
+
+    m_Device->updateDescriptorSets({ writeDescSet }, {});
+
+
     std::vector<vk::SurfaceFormatKHR> surfaceFormats = physicalDevice.getSurfaceFormatsKHR(m_uSurface.get());
     std::vector<vk::PresentModeKHR> surfacePresentModes = physicalDevice.getSurfacePresentModesKHR(m_uSurface.get());
     
     swapchainFormat = surfaceFormats[0];
     swapchainPresentMode = surfacePresentModes[0];
-     
-    vk::SwapchainCreateInfoKHR swapchainCreateInfo;
-    swapchainCreateInfo.surface = m_uSurface.get();
-    swapchainCreateInfo.minImageCount = surfaceCapabilities.minImageCount + 1;
-    swapchainCreateInfo.imageFormat = swapchainFormat.format;
-    swapchainCreateInfo.imageColorSpace = swapchainFormat.colorSpace;
-    swapchainCreateInfo.imageExtent = surfaceCapabilities.currentExtent;
-    swapchainCreateInfo.imageArrayLayers = 1;
-    swapchainCreateInfo.imageUsage = vk::ImageUsageFlagBits::eColorAttachment;
-    swapchainCreateInfo.imageSharingMode = vk::SharingMode::eExclusive;
-    swapchainCreateInfo.preTransform = surfaceCapabilities.currentTransform;
-    swapchainCreateInfo.presentMode = swapchainPresentMode;
-    swapchainCreateInfo.clipped = VK_TRUE;
-
-    m_Swapchain = m_Device->createSwapchainKHRUnique(swapchainCreateInfo);
-
-    swapchainImages = m_Device->getSwapchainImagesKHR(m_Swapchain.get());
-
-
 
     RecreateSwapchain();
 
@@ -621,9 +690,11 @@ void VulkanApp::RecreateSwapchain()
     blend.attachmentCount = 1;
     blend.pAttachments = blendattachment;
 
+    auto pipelineDescSetLayouts = { descSetLayout.get() };
+
     vk::PipelineLayoutCreateInfo layoutCreateInfo;
-    layoutCreateInfo.setLayoutCount = 0;
-    layoutCreateInfo.pSetLayouts = nullptr;
+    layoutCreateInfo.setLayoutCount = pipelineDescSetLayouts.size();
+    layoutCreateInfo.pSetLayouts = pipelineDescSetLayouts.begin();
 
     pipelineLayout = m_Device->createPipelineLayoutUnique(layoutCreateInfo);
 
@@ -730,6 +801,11 @@ void VulkanApp::RecreateSwapchain()
 /// @brief 更新処理
 void VulkanApp::Update()
 {
+    static float angle = 0.0f;
+    angle += SDLApp::GetInstance().DeltaTime();
+    sceneData.rectCenter.x = sinf(angle * 0.002f)* 0.5f;
+    sceneData.rectCenter.y = cosf(angle * 0.002f)* 0.5f;
+
     m_Device->waitForFences({ imgRenderedFence.get() }, VK_TRUE, UINT64_MAX);
 
     vk::ResultValue<uint32_t> acquireImgResult = m_Device->acquireNextImageKHR(m_Swapchain.get(), 1'000'000'000, m_swapchainImgSemaphore.get());
@@ -745,6 +821,15 @@ void VulkanApp::Update()
     }
 
     m_Device->resetFences({ imgRenderedFence.get() });
+
+    std::memcpy(pUniformBufMem, &sceneData, sizeof(SceneData));
+
+    vk::MappedMemoryRange flushMemoryRange;
+    flushMemoryRange.memory = uniformBufMemory.get();
+    flushMemoryRange.offset = 0;
+    flushMemoryRange.size = sizeof(SceneData);
+
+    //m_Device->flushMappedMemoryRanges({ flushMemoryRange });
 
     uint32_t imgIndex = acquireImgResult.value;
 
@@ -771,6 +856,7 @@ void VulkanApp::Update()
     m_CmdBufs[0]->bindPipeline(vk::PipelineBindPoint::eGraphics, m_Pipeline.get());
     m_CmdBufs[0]->bindVertexBuffers(0, { vertexBuf.get() }, { 0 }); // 追加
     m_CmdBufs[0]->bindIndexBuffer(indexBuf.get(), 0, vk::IndexType::eUint16);
+    m_CmdBufs[0]->bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pipelineLayout.get(), 0, { descSets[0].get() }, {});
     m_CmdBufs[0]->drawIndexed(static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
     
     m_CmdBufs[0]->endRenderPass();

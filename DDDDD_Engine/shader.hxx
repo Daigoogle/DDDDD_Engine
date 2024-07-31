@@ -21,8 +21,15 @@ public:
 
 	void LoadShader(std::string fileName);
 
-private:
+	void CreateBuffer();
 
+	void WriteBuffer(uint16_t slot,void* data);
+	void SetTexture(uint16_t slot, vk::ImageView texture);
+
+	virtual void Bind() = 0;
+private:
+	vk::Device m_Device;
+	std::vector<void*> m_DeviceBuffer;
 };
 
 #endif // !_____shader_HXX_____

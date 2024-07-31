@@ -53,27 +53,36 @@ private:
 	std::vector<vk::UniqueFramebuffer>		m_swapchainFramebufs;
 	std::vector<vk::UniqueImageView>		m_swapchainImageViews;
 	std::vector<vk::UniqueCommandBuffer>	m_CmdBufs;
+	std::vector<vk::UniqueDescriptorSet>	descSets;
 	vk::Queue								m_graphicsQueue;
 
 	vk::UniqueInstance			m_Instance;
 	vk::UniqueSurfaceKHR		m_uSurface;
 	vk::UniqueDevice			m_Device;
 	vk::UniqueFence				m_SwapchainImgFence;
+	vk::UniqueFence				imgRenderedFence;
 	vk::UniqueSwapchainKHR		m_Swapchain;
 	vk::UniqueRenderPass		m_Renderpass;
 	vk::UniquePipelineLayout	pipelineLayout;
 	vk::UniquePipeline			m_Pipeline;
 	vk::UniqueCommandPool		cmdPool;
+	vk::UniqueCommandPool		tmpCmdPool;
 	vk::UniqueShaderModule		vertShader;
 	vk::UniqueShaderModule		fragShader;
 	vk::UniqueSemaphore			imgRenderedSemaphorne;
 	vk::UniqueSemaphore			m_swapchainImgSemaphore;
-	vk::UniqueFence				imgRenderedFence;
-	vk::UniqueDeviceMemory		vertexBufMemory;
-	vk::UniqueDeviceMemory		indexBufMemory;
 	vk::UniqueBuffer			vertexBuf;
 	vk::UniqueBuffer			indexBuf;
-	vk::UniqueDeviceMemory stagingBufMemory;
+	vk::UniqueBuffer			stagingBuf;
+	vk::UniqueBuffer			uniformBuf;
+	vk::UniqueDeviceMemory		vertexBufMemory;
+	vk::UniqueDeviceMemory		indexBufMemory;
+	vk::UniqueDeviceMemory		stagingBufMemory;
+	vk::UniqueDeviceMemory		uniformBufMemory;
+	vk::UniqueDescriptorSetLayout descSetLayout;
+	vk::UniqueDescriptorPool	descPool;
+
+	void* pUniformBufMem;
 };
 
 #endif // !_____Vulkan_HXX_____
