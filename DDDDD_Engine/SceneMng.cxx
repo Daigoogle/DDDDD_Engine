@@ -1,7 +1,7 @@
 #include "SceneMng.hxx"
 
 SceneMng::SceneMng()
-	: SingletonBase(UPDATE_ORDER::SECOND_UPDATE)
+	: Singleton(UPDATE_ORDER::SECOND_UPDATE)
 	, m_NowScene(nullptr)
 	, m_NextScene(nullptr)
 	, m_LoadScenes()

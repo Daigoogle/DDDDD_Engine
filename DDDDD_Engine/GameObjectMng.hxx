@@ -20,18 +20,10 @@ class GameObjectInst;
 class GameObject;
 class SceneBase;
 
-class GameObjectMng: public SingletonBase
+class GameObjectMng: public Singleton<GameObjectMng>
 {
+	friend class Singleton<GameObjectMng>;
 public:
-	// =-=-= シングルトン化 =-=-=
-	SINGLETON_MAKES(GameObjectMng)
-
-	/// @brief コンストラクタ
-	GameObjectMng();
-
-	/// @brief デストラクタ
-	~GameObjectMng();
-
 	/// @brief 初期化処理
 	/// @return 成功したらtrue
 	bool Init() override;
@@ -48,6 +40,11 @@ public:
 	void DeleteSceneObjects(SceneBase* pScene);
 
 private:
+	/// @brief コンストラクタ
+	GameObjectMng();
+	/// @brief デストラクタ
+	~GameObjectMng();
+
 	/// @brief 生成オブジェクトの初期化と登録
 	void InitObjects();
 	/// @brief 現シーンのオブジェクトの更新

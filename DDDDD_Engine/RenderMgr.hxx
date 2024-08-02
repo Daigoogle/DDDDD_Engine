@@ -17,11 +17,10 @@ struct Vertex
 	float x, y;
 };
 
-class RenderMgr: public SingletonBase
+class RenderMgr: public Singleton<RenderMgr>
 {
+	friend class Singleton<RenderMgr>;
 public:
-	SINGLETON_MAKES(RenderMgr)
-
 	RenderMgr();
 	~RenderMgr();
 

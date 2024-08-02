@@ -1,7 +1,7 @@
 #include "RenderMgr.hxx"
 
 RenderMgr::RenderMgr()
-	: SingletonBase(UPDATE_ORDER::NO_UPDATE)
+	: Singleton(UPDATE_ORDER::NO_UPDATE)
 {
 
 }

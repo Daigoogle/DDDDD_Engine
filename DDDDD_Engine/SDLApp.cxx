@@ -3,7 +3,7 @@
 #include <iostream>
 
 SDLApp::SDLApp()
-    :SingletonBase(UPDATE_ORDER::FIRST_UPDATE)
+    :Singleton(UPDATE_ORDER::FIRST_UPDATE)
     ,m_Window(nullptr)
     ,m_event()
 	,m_stillRunning(true)

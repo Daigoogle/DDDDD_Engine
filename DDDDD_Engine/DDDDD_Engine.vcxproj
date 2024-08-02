@@ -87,7 +87,8 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;C:\HAL\program\stb-master</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -104,7 +105,8 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;C:\HAL\program\stb-master</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -123,8 +125,8 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;C:\HAL\program\stb-master</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -145,7 +147,8 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;C:\HAL\program\stb-master</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -161,6 +164,7 @@
     <ClCompile Include="CameraComp.cxx" />
     <ClCompile Include="Component.cxx" />
     <ClCompile Include="DebugClass.cxx" />
+    <ClCompile Include="FragmentShader.cxx" />
     <ClCompile Include="GameObject.cxx" />
     <ClCompile Include="GameObjectInst.cxx" />
     <ClCompile Include="GameObjectMng.cxx" />
@@ -171,18 +175,21 @@
     <ClCompile Include="SceneBase.cxx" />
     <ClCompile Include="SceneMng.cxx" />
     <ClCompile Include="SDLApp.cxx" />
-    <ClCompile Include="shader.cxx" />
+    <ClCompile Include="Shader.cxx" />
+    <ClCompile Include="ShaderList.cxx" />
     <ClCompile Include="SingletonsMng.cxx" />
     <ClCompile Include="Supervision.cxx" />
     <ClCompile Include="Swapchain.cxx" />
     <ClCompile Include="TitleScene.cxx" />
     <ClCompile Include="Vectors.cxx" />
+    <ClCompile Include="VertexShader.cxx" />
     <ClCompile Include="VulkanApp.cxx" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CameraComp.hxx" />
     <ClInclude Include="Component.hxx" />
     <ClInclude Include="DebugClass.hxx" />
+    <ClInclude Include="FragmentShader.hxx" />
     <ClInclude Include="GameObject.hxx" />
     <ClInclude Include="GameObjectInst.hxx" />
     <ClInclude Include="GameObjectMng.hxx" />
@@ -196,11 +203,13 @@
     </ClInclude>
     <ClInclude Include="SceneMng.hxx" />
     <ClInclude Include="SDLApp.hxx" />
-    <ClInclude Include="shader.hxx" />
+    <ClInclude Include="Shader.hxx" />
+    <ClInclude Include="ShaderList.hxx" />
     <ClInclude Include="SingletonsMng.hxx" />
     <ClInclude Include="Swapchain.hxx" />
     <ClInclude Include="TitleScene.hxx" />
     <ClInclude Include="Vectors.hxx" />
+    <ClInclude Include="VertexShader.hxx" />
     <ClInclude Include="VulkanApp.hxx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

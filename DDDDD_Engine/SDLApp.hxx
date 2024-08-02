@@ -13,17 +13,10 @@
 #include <SDL2/SDL.h>
 #include "SingletonsMng.hxx"
 
-class SDLApp: public SingletonBase
+class SDLApp: public Singleton<SDLApp>
 {
+	friend class Singleton<SDLApp>;
 public:
-	// シングルトン化
-	SINGLETON_MAKES(SDLApp)
-
-	/// @brief コンストラクタ
-	SDLApp();
-	/// @brief デストラクタ
-	~SDLApp();
-
 	/// @brief 初期化処理
 	/// @return 成功したらtrue
 	bool Init() override;
@@ -51,6 +44,11 @@ public:
 	/// @return 1フレーム当たりの時間(ミリ秒)
 	unsigned int DeltaTime() { return m_DeltaTime; }
 private:
+	/// @brief コンストラクタ
+	SDLApp();
+	/// @brief デストラクタ
+	~SDLApp();
+
 	SDL_Window *m_Window;
 	static const unsigned int m_WindowWidth = 1280;
 	static const unsigned int m_WindowHeight = 720;

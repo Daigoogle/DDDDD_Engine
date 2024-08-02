@@ -11,17 +11,16 @@
 // =-=-= インクルード部 =-=-=
 #include "SingletonsMng.hxx"
 
-class DebugClass:public SingletonBase
+class DebugClass :public Singleton<DebugClass>
 {
+	friend class Singleton<DebugClass>;
 public:
-	SINGLETON_MAKES(DebugClass)
-
-	DebugClass();
-	~DebugClass();
 
 	bool Init() override;
 	void Update() override;
 private:
+	DebugClass();
+	~DebugClass();
 
 };
 

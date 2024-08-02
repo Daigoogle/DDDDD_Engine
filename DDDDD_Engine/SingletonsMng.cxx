@@ -1,6 +1,6 @@
 #include "SingletonsMng.hxx"
 
-std::array<std::deque<SingletonBase*>, static_cast<int>(UPDATE_ORDER::LAST_UPDATE) + 1> Supervision::m_Updaters;//更新処理
+std::array<std::deque<_SingletonBase*>, static_cast<int>(UPDATE_ORDER::LAST_UPDATE) + 1> Supervision::m_Updaters;//更新処理
 std::deque<void(*)()> Supervision::m_finalizers;//終了処理
 
 namespace 
@@ -9,7 +9,7 @@ namespace
 }
 
 /// @brief コンストラクタ
-SingletonBase::SingletonBase(UPDATE_ORDER Order)
+_SingletonBase::_SingletonBase(UPDATE_ORDER Order)
 {
 	Supervision::addUpdater(this, Order);// 更新処理を追加
 }
@@ -25,7 +25,7 @@ void Supervision::addFinalizer(void(*func)())
 /// @brief 更新処理を保存
 /// @param pSingleton 処理するシングルトン
 /// @param order 更新順
-void Supervision::addUpdater(SingletonBase* pSingleton, UPDATE_ORDER order)
+void Supervision::addUpdater(_SingletonBase* pSingleton, UPDATE_ORDER order)
 {
 	if(order == UPDATE_ORDER::NO_UPDATE)// 更新しない場合は追加しない
 		return;

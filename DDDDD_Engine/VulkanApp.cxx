@@ -7,10 +7,14 @@
 #include "SDLApp.hxx"
 #include "Vectors.hxx"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
+const char* TextureFilePath = "Assets/Texture/UnionSorcerer_thumbnail.png";
+
 struct Vertex {
     fVec2 Pos;
     fVec3 Color;
-    //fVec3 Normal;
 };
 std::vector<Vertex> vertices = {
     Vertex{fVec2{-0.5f, 0.5f}, fVec3{ 0.0f, 0.0f, 1.0f}},
@@ -24,13 +28,14 @@ struct SceneData {
     fVec2 rectCenter;
 };
 
-SceneData sceneData = { fVec2{ 0.3, -0.2 } };
+SceneData sceneData = { fVec2{ 0.3f, -0.2f } };
 
 VulkanApp::VulkanApp()
-    : SingletonBase(UPDATE_ORDER::SECOND_UPDATE)
+    : Singleton(UPDATE_ORDER::SECOND_UPDATE)
     , m_Window(nullptr)
     , swapchainPresentMode()
     , m_extension_count(0)
+    , pUniformBufMem(nullptr)
 {
 
 }
@@ -473,7 +478,7 @@ bool VulkanApp::Init()
     }
     if (!suitableMemoryTypeFound) {
         std::cerr << "適切なメモリタイプが存在しません。" << std::endl;
-        return -1;
+        return false;
     }
 
     uniformBufMemory = m_Device->allocateMemoryUnique(uniformBufMemAllocInfo);
@@ -482,24 +487,217 @@ bool VulkanApp::Init()
 
     pUniformBufMem = m_Device->mapMemory(uniformBufMemory.get(), 0, sizeof(SceneData));
 
-    vk::DescriptorSetLayoutBinding descSetLayoutBinding[1];
+
+    // テクスチャの読み込み
+    int imgWidth, imgHeight, imgCh;
+    auto pImgData = stbi_load("image.jpg", &imgWidth, &imgHeight, &imgCh, STBI_rgb_alpha);
+    if (pImgData == nullptr) {
+        std::cerr << "画像ファイルの読み込みに失敗しました。" << std::endl;
+        return false;
+    }
+
+    vk::ImageCreateInfo texImgCreateInfo;
+    texImgCreateInfo.imageType = vk::ImageType::e2D;
+    texImgCreateInfo.extent = vk::Extent3D(imgWidth, imgHeight, 1);
+    texImgCreateInfo.mipLevels = 1;
+    texImgCreateInfo.arrayLayers = 1;
+    texImgCreateInfo.format = vk::Format::eR8G8B8A8Unorm;
+    texImgCreateInfo.tiling = vk::ImageTiling::eOptimal;
+    texImgCreateInfo.initialLayout = vk::ImageLayout::eUndefined;
+    texImgCreateInfo.usage = vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst;
+    texImgCreateInfo.sharingMode = vk::SharingMode::eExclusive;
+    texImgCreateInfo.samples = vk::SampleCountFlagBits::e1;
+
+    vk::UniqueImage texImage = m_Device->createImageUnique(texImgCreateInfo);
+
+    vk::MemoryRequirements texImgMemReq = m_Device->getImageMemoryRequirements(texImage.get());
+
+    vk::MemoryAllocateInfo texImgMemAllocInfo;
+    texImgMemAllocInfo.allocationSize = texImgMemReq.size;
+
+    suitableMemoryTypeFound = false;
+    for (uint32_t i = 0; i < memProps.memoryTypeCount; i++) {
+        if (texImgMemReq.memoryTypeBits & (1 << i)) {
+            texImgMemAllocInfo.memoryTypeIndex = i;
+            suitableMemoryTypeFound = true;
+            break;
+        }
+    }
+
+    if (!suitableMemoryTypeFound) {
+        std::cerr << "使用可能なメモリタイプがありません。" << std::endl;
+        return false;
+    }
+
+    vk::UniqueDeviceMemory texImgMem = m_Device->allocateMemoryUnique(texImgMemAllocInfo);
+
+    m_Device->bindImageMemory(texImage.get(), texImgMem.get(), 0);
+
+    {
+        size_t imgDataSize = 4 * imgWidth * imgHeight;
+
+        vk::BufferCreateInfo imgStagingBufferCreateInfo;
+        imgStagingBufferCreateInfo.size = imgDataSize;
+        imgStagingBufferCreateInfo.usage = vk::BufferUsageFlagBits::eTransferSrc;
+        imgStagingBufferCreateInfo.sharingMode = vk::SharingMode::eExclusive;
+
+        vk::UniqueBuffer imgStagingBuf = m_Device->createBufferUnique(imgStagingBufferCreateInfo);
+
+        vk::MemoryRequirements imgStagingBufMemReq = m_Device->getBufferMemoryRequirements(imgStagingBuf.get());
+
+        vk::MemoryAllocateInfo imgStagingBufMemAllocInfo;
+        imgStagingBufMemAllocInfo.allocationSize = imgStagingBufMemReq.size;
+
+        suitableMemoryTypeFound = false;
+        for (uint32_t i = 0; i < memProps.memoryTypeCount; i++) {
+            if (imgStagingBufMemReq.memoryTypeBits & (1 << i) &&
+                (memProps.memoryTypes[i].propertyFlags & vk::MemoryPropertyFlagBits::eHostVisible)) {
+                imgStagingBufMemAllocInfo.memoryTypeIndex = i;
+                suitableMemoryTypeFound = true;
+                break;
+            }
+        }
+        if (!suitableMemoryTypeFound) {
+            std::cerr << "適切なメモリタイプが存在しません。" << std::endl;
+            return false;
+        }
+
+        vk::UniqueDeviceMemory imgStagingBufMemory = m_Device->allocateMemoryUnique(imgStagingBufMemAllocInfo);
+
+        m_Device->bindBufferMemory(imgStagingBuf.get(), imgStagingBufMemory.get(), 0);
+
+        void* pImgStagingBufMem = m_Device->mapMemory(imgStagingBufMemory.get(), 0, imgDataSize);
+
+        std::memcpy(pImgStagingBufMem, pImgData, imgDataSize);
+
+        vk::MappedMemoryRange flushMemoryRange;
+        flushMemoryRange.memory = imgStagingBufMemory.get();
+        flushMemoryRange.offset = 0;
+        flushMemoryRange.size = imgDataSize;
+
+        m_Device->flushMappedMemoryRanges({ flushMemoryRange });
+
+        m_Device->unmapMemory(imgStagingBufMemory.get());
+
+        stbi_image_free(pImgData);
+
+        vk::CommandPoolCreateInfo tmpCmdPoolCreateInfo;
+        tmpCmdPoolCreateInfo.queueFamilyIndex = graphicsQueueFamilyIndex;
+        tmpCmdPoolCreateInfo.flags = vk::CommandPoolCreateFlagBits::eTransient;
+        vk::UniqueCommandPool tmpCmdPool = m_Device->createCommandPoolUnique(tmpCmdPoolCreateInfo);
+
+        vk::CommandBufferAllocateInfo tmpCmdBufAllocInfo;
+        tmpCmdBufAllocInfo.commandPool = tmpCmdPool.get();
+        tmpCmdBufAllocInfo.commandBufferCount = 1;
+        tmpCmdBufAllocInfo.level = vk::CommandBufferLevel::ePrimary;
+        std::vector<vk::UniqueCommandBuffer> tmpCmdBufs = m_Device->allocateCommandBuffersUnique(tmpCmdBufAllocInfo);
+
+        vk::CommandBufferBeginInfo cmdBeginInfo;
+        cmdBeginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
+
+        tmpCmdBufs[0]->begin(cmdBeginInfo);
+
+        {
+            vk::ImageMemoryBarrier barrior;
+            barrior.oldLayout = vk::ImageLayout::eUndefined;
+            barrior.newLayout = vk::ImageLayout::eTransferDstOptimal;
+            barrior.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+            barrior.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+            barrior.image = texImage.get();
+            barrior.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
+            barrior.subresourceRange.baseMipLevel = 0;
+            barrior.subresourceRange.levelCount = 1;
+            barrior.subresourceRange.baseArrayLayer = 0;
+            barrior.subresourceRange.layerCount = 1;
+            barrior.srcAccessMask = {};
+            barrior.dstAccessMask = vk::AccessFlagBits::eTransferWrite;
+            tmpCmdBufs[0]->pipelineBarrier(vk::PipelineStageFlagBits::eTopOfPipe, vk::PipelineStageFlagBits::eTransfer, {}, {}, {}, { barrior });
+        }
+
+        vk::BufferImageCopy imgCopyRegion;
+        imgCopyRegion.bufferOffset = 0;
+        imgCopyRegion.imageSubresource.aspectMask = vk::ImageAspectFlagBits::eColor;
+        imgCopyRegion.imageSubresource.mipLevel = 0;
+        imgCopyRegion.imageSubresource.baseArrayLayer = 0;
+        imgCopyRegion.imageSubresource.layerCount = 1;
+        imgCopyRegion.imageOffset = vk::Offset3D{ 0, 0, 0 };
+        imgCopyRegion.imageExtent = vk::Extent3D{ uint32_t(imgWidth), uint32_t(imgHeight), 1 };
+
+        imgCopyRegion.bufferRowLength = 0;
+        imgCopyRegion.bufferImageHeight = 0;
+
+        tmpCmdBufs[0]->copyBufferToImage(imgStagingBuf.get(), texImage.get(), vk::ImageLayout::eTransferDstOptimal, { imgCopyRegion });
+
+        {
+            vk::ImageMemoryBarrier barrior;
+            barrior.oldLayout = vk::ImageLayout::eTransferDstOptimal;
+            barrior.newLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+            barrior.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+            barrior.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+            barrior.image = texImage.get();
+            barrior.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
+            barrior.subresourceRange.baseMipLevel = 0;
+            barrior.subresourceRange.levelCount = 1;
+            barrior.subresourceRange.baseArrayLayer = 0;
+            barrior.subresourceRange.layerCount = 1;
+            barrior.srcAccessMask = vk::AccessFlagBits::eTransferWrite;
+            barrior.dstAccessMask = vk::AccessFlagBits::eShaderRead;
+            tmpCmdBufs[0]->pipelineBarrier(vk::PipelineStageFlagBits::eTransfer, vk::PipelineStageFlagBits::eFragmentShader, {}, {}, {}, { barrior });
+        }
+        tmpCmdBufs[0]->end();
+
+        vk::CommandBuffer submitCmdBuf[1] = { tmpCmdBufs[0].get() };
+        vk::SubmitInfo submitInfo;
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pCommandBuffers = submitCmdBuf;
+
+        m_graphicsQueue.submit({ submitInfo });
+        m_graphicsQueue.waitIdle();
+    }
+
+    vk::SamplerCreateInfo samplerCreateInfo;
+    samplerCreateInfo.magFilter = vk::Filter::eLinear;
+    samplerCreateInfo.minFilter = vk::Filter::eLinear;
+    samplerCreateInfo.addressModeU = vk::SamplerAddressMode::eRepeat;
+    samplerCreateInfo.addressModeV = vk::SamplerAddressMode::eRepeat;
+    samplerCreateInfo.addressModeW = vk::SamplerAddressMode::eRepeat;
+    samplerCreateInfo.anisotropyEnable = false;
+    samplerCreateInfo.maxAnisotropy = 1.0f;
+    samplerCreateInfo.borderColor = vk::BorderColor::eIntOpaqueBlack;
+    samplerCreateInfo.unnormalizedCoordinates = false;
+    samplerCreateInfo.compareEnable = false;
+    samplerCreateInfo.compareOp = vk::CompareOp::eAlways;
+    samplerCreateInfo.mipmapMode = vk::SamplerMipmapMode::eLinear;
+    samplerCreateInfo.mipLodBias = 0.0f;
+    samplerCreateInfo.minLod = 0.0f;
+    samplerCreateInfo.maxLod = 0.0f;
+    vk::UniqueSampler sampler = m_Device->createSamplerUnique(samplerCreateInfo);
+
+
+    vk::DescriptorSetLayoutBinding descSetLayoutBinding[2];
     descSetLayoutBinding[0].binding = 0;
     descSetLayoutBinding[0].descriptorType = vk::DescriptorType::eUniformBuffer;
     descSetLayoutBinding[0].descriptorCount = 1;
-    descSetLayoutBinding[0].stageFlags = vk::ShaderStageFlagBits::eVertex;
+    descSetLayoutBinding[0].stageFlags = vk::ShaderStageFlagBits::eVertex; 
+    descSetLayoutBinding[1].binding = 1;
+    descSetLayoutBinding[1].descriptorType = vk::DescriptorType::eCombinedImageSampler;
+    descSetLayoutBinding[1].descriptorCount = 1;
+    descSetLayoutBinding[1].stageFlags = vk::ShaderStageFlagBits::eFragment;
 
     vk::DescriptorSetLayoutCreateInfo descSetLayoutCreateInfo{};
-    descSetLayoutCreateInfo.bindingCount = 1;
+    descSetLayoutCreateInfo.bindingCount = std::size(descSetLayoutBinding);
     descSetLayoutCreateInfo.pBindings = descSetLayoutBinding;
 
     descSetLayout = m_Device->createDescriptorSetLayoutUnique(descSetLayoutCreateInfo);
 
-    vk::DescriptorPoolSize descPoolSize[1];
+    vk::DescriptorPoolSize descPoolSize[2];
     descPoolSize[0].type = vk::DescriptorType::eUniformBuffer;
     descPoolSize[0].descriptorCount = 1;
+    descPoolSize[1].type = vk::DescriptorType::eCombinedImageSampler;
+    descPoolSize[1].descriptorCount = 1;
 
     vk::DescriptorPoolCreateInfo descPoolCreateInfo;
-    descPoolCreateInfo.poolSizeCount = 1;
+    descPoolCreateInfo.poolSizeCount = std::size(descPoolSize);
     descPoolCreateInfo.pPoolSizes = descPoolSize;
     descPoolCreateInfo.maxSets = 1;
 
@@ -510,7 +708,7 @@ bool VulkanApp::Init()
     auto descSetLayouts = { descSetLayout.get() };
 
     descSetAllocInfo.descriptorPool = descPool.get();
-    descSetAllocInfo.descriptorSetCount = descSetLayouts.size();
+    descSetAllocInfo.descriptorSetCount = static_cast<uint32_t>(descSetLayouts.size());
     descSetAllocInfo.pSetLayouts = descSetLayouts.begin();
 
     descSets = m_Device->allocateDescriptorSetsUnique(descSetAllocInfo);
@@ -530,6 +728,8 @@ bool VulkanApp::Init()
     writeDescSet.pBufferInfo = descBufInfo;
 
     m_Device->updateDescriptorSets({ writeDescSet }, {});
+
+
 
 
     std::vector<vk::SurfaceFormatKHR> surfaceFormats = physicalDevice.getSurfaceFormatsKHR(m_uSurface.get());
@@ -693,7 +893,7 @@ void VulkanApp::RecreateSwapchain()
     auto pipelineDescSetLayouts = { descSetLayout.get() };
 
     vk::PipelineLayoutCreateInfo layoutCreateInfo;
-    layoutCreateInfo.setLayoutCount = pipelineDescSetLayouts.size();
+    layoutCreateInfo.setLayoutCount = static_cast<uint32_t>(pipelineDescSetLayouts.size());
     layoutCreateInfo.pSetLayouts = pipelineDescSetLayouts.begin();
 
     pipelineLayout = m_Device->createPipelineLayoutUnique(layoutCreateInfo);

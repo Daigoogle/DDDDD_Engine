@@ -53,6 +53,9 @@
     <Filter Include="Scene">
       <UniqueIdentifier>{5f93fb6a-4115-48c3-b21c-ff62652fa5ed}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Graphics\shader">
+      <UniqueIdentifier>{0ac0e720-eff6-448b-9e8f-314d3af63a34}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SingletonsMng.cxx">
@@ -112,8 +115,17 @@
     <ClCompile Include="RenderTest.cxx">
       <Filter>Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="shader.cxx">
-      <Filter>Graphics</Filter>
+    <ClCompile Include="ShaderList.cxx">
+      <Filter>Graphics\shader</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cxx">
+      <Filter>Graphics\shader</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexShader.cxx">
+      <Filter>Graphics\shader</Filter>
+    </ClCompile>
+    <ClCompile Include="FragmentShader.cxx">
+      <Filter>Graphics\shader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -171,8 +183,17 @@
     <ClInclude Include="RenderTest.hxx">
       <Filter>Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="shader.hxx">
-      <Filter>Graphics</Filter>
+    <ClInclude Include="ShaderList.hxx">
+      <Filter>Graphics\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.hxx">
+      <Filter>Graphics\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexShader.hxx">
+      <Filter>Graphics\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="FragmentShader.hxx">
+      <Filter>Graphics\shader</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

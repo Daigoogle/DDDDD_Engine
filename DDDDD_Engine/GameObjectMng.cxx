@@ -5,7 +5,7 @@
 #include "SceneBase.hxx"
 
 GameObjectMng::GameObjectMng()
-	: SingletonBase(UPDATE_ORDER::THIRD_UPDATE)
+	: Singleton(UPDATE_ORDER::THIRD_UPDATE)
 {
 
 }

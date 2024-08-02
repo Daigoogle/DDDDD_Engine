@@ -16,25 +16,25 @@
 #include "SingletonsMng.hxx"
 
 // =-=-= クラス定義部 =-=-=
-class VulkanApp:public SingletonBase
+class VulkanApp:public Singleton<VulkanApp>
 {
+	friend class Singleton<VulkanApp>;
 public:
-	// =-=-= シングルトン化 =-=-=
-	SINGLETON_MAKES(VulkanApp)
-
-	/// @brief コンストラクタ
-	VulkanApp();
-	/// @brief デストラクタ
-	~VulkanApp();
-
 	/// @brief 初期化処理
 	/// @return 成功したらtrue
 	bool Init() override;
 	/// @brief 更新処理
 	void Update() override;
 
+	/// @brief デバイスの取得
+	/// @return デバイス
 	VkDevice GetDevice() { return m_Device.get(); }
 private:
+	/// @brief コンストラクタ
+	VulkanApp();
+	/// @brief デストラクタ
+	~VulkanApp();
+
 	/// @brief スワップチェインの再作成
 	void RecreateSwapchain();
 

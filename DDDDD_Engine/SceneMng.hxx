@@ -14,14 +14,10 @@
 #include "SingletonsMng.hxx"
 #include "SceneBase.hxx"
 
-class SceneMng: public SingletonBase
+class SceneMng: public Singleton<SceneMng>
 {
+	friend class Singleton<SceneMng>;
 public:
-	SINGLETON_MAKES(SceneMng)
-
-	SceneMng();
-	~SceneMng();
-
 	bool Init() override;
 	void Update() override;
 
@@ -59,6 +55,9 @@ public:
 
 	SceneBase* GetNowScene() const { return m_NowScene.get(); }
 private:
+	SceneMng();
+	~SceneMng();
+	
 	std::unique_ptr<SceneBase> m_NowScene;
 	std::unique_ptr<SceneBase> m_NextScene;
 	std::deque<std::unique_ptr<SceneBase>> m_LoadScenes;

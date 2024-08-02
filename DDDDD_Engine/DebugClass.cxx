@@ -5,7 +5,7 @@
 #include "SDLApp.hxx"
 
 DebugClass::DebugClass()
-	:SingletonBase(UPDATE_ORDER::LAST_UPDATE)
+	:Singleton(UPDATE_ORDER::LAST_UPDATE)
 {
 
 }

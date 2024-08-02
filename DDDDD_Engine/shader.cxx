@@ -1,4 +1,5 @@
-#include "shader.hxx"
+#include "Shader.hxx"
+#include <fstream>
 
 shader::shader()
 {
