@@ -17,10 +17,10 @@ struct Vertex {
     fVec3 Color;
 };
 std::vector<Vertex> vertices = {
-    Vertex{fVec2{-0.5f, 0.5f}, fVec3{ 0.0f, 0.0f, 1.0f}},
-    Vertex{fVec2{-0.5f,-0.5f}, fVec3{ 0.0f, 1.0f, 0.0f}},
-    Vertex{fVec2{ 0.5f,-0.5f}, fVec3{ 1.0f, 0.0f, 0.0f}},
-    Vertex{fVec2{ 0.5f, 0.5f}, fVec3{ 1.0f, 1.0f, 1.0f}},
+    Vertex{fVec2{-0.1f, 0.1f}, fVec3{ 0.0f, 1.0f, 1.0f}},
+    Vertex{fVec2{-0.1f,-0.1f}, fVec3{ 1.0f, 1.0f, 0.0f}},
+    Vertex{fVec2{ 0.1f,-0.1f}, fVec3{ 1.0f, 0.0f, 1.0f}},
+    Vertex{fVec2{ 0.1f, 0.1f}, fVec3{ 1.0f, 1.0f, 1.0f}},
 };
 std::vector<uint16_t> indices = { 0,1,2,0,2,3 };
 
@@ -28,7 +28,8 @@ struct SceneData {
     fVec2 rectCenter;
 };
 
-SceneData sceneData = { fVec2{ 0.3f, -0.2f } };
+SceneData sceneData1 = { fVec2{ 0.3f, -0.2f } };
+SceneData sceneData2 = { fVec2{ 0.0f, 0.0f } };
 
 VulkanApp::VulkanApp()
     : Singleton(UPDATE_ORDER::SECOND_UPDATE)
@@ -42,8 +43,10 @@ VulkanApp::VulkanApp()
 
 VulkanApp::~VulkanApp()
 {
+    m_Device->unmapMemory(uniformBufMemory2.get());
     m_Device->unmapMemory(uniformBufMemory.get());
 
+    descSets2.clear();
     descSets.clear();
     m_graphicsQueue.waitIdle();
     m_CmdBufs.clear();
@@ -489,171 +492,171 @@ bool VulkanApp::Init()
 
 
     // テクスチャの読み込み
-    int imgWidth, imgHeight, imgCh;
-    auto pImgData = stbi_load("image.jpg", &imgWidth, &imgHeight, &imgCh, STBI_rgb_alpha);
-    if (pImgData == nullptr) {
-        std::cerr << "画像ファイルの読み込みに失敗しました。" << std::endl;
-        return false;
-    }
-
-    vk::ImageCreateInfo texImgCreateInfo;
-    texImgCreateInfo.imageType = vk::ImageType::e2D;
-    texImgCreateInfo.extent = vk::Extent3D(imgWidth, imgHeight, 1);
-    texImgCreateInfo.mipLevels = 1;
-    texImgCreateInfo.arrayLayers = 1;
-    texImgCreateInfo.format = vk::Format::eR8G8B8A8Unorm;
-    texImgCreateInfo.tiling = vk::ImageTiling::eOptimal;
-    texImgCreateInfo.initialLayout = vk::ImageLayout::eUndefined;
-    texImgCreateInfo.usage = vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst;
-    texImgCreateInfo.sharingMode = vk::SharingMode::eExclusive;
-    texImgCreateInfo.samples = vk::SampleCountFlagBits::e1;
-
-    vk::UniqueImage texImage = m_Device->createImageUnique(texImgCreateInfo);
-
-    vk::MemoryRequirements texImgMemReq = m_Device->getImageMemoryRequirements(texImage.get());
-
-    vk::MemoryAllocateInfo texImgMemAllocInfo;
-    texImgMemAllocInfo.allocationSize = texImgMemReq.size;
-
-    suitableMemoryTypeFound = false;
-    for (uint32_t i = 0; i < memProps.memoryTypeCount; i++) {
-        if (texImgMemReq.memoryTypeBits & (1 << i)) {
-            texImgMemAllocInfo.memoryTypeIndex = i;
-            suitableMemoryTypeFound = true;
-            break;
-        }
-    }
-
-    if (!suitableMemoryTypeFound) {
-        std::cerr << "使用可能なメモリタイプがありません。" << std::endl;
-        return false;
-    }
-
-    vk::UniqueDeviceMemory texImgMem = m_Device->allocateMemoryUnique(texImgMemAllocInfo);
-
-    m_Device->bindImageMemory(texImage.get(), texImgMem.get(), 0);
-
-    {
-        size_t imgDataSize = 4 * imgWidth * imgHeight;
-
-        vk::BufferCreateInfo imgStagingBufferCreateInfo;
-        imgStagingBufferCreateInfo.size = imgDataSize;
-        imgStagingBufferCreateInfo.usage = vk::BufferUsageFlagBits::eTransferSrc;
-        imgStagingBufferCreateInfo.sharingMode = vk::SharingMode::eExclusive;
-
-        vk::UniqueBuffer imgStagingBuf = m_Device->createBufferUnique(imgStagingBufferCreateInfo);
-
-        vk::MemoryRequirements imgStagingBufMemReq = m_Device->getBufferMemoryRequirements(imgStagingBuf.get());
-
-        vk::MemoryAllocateInfo imgStagingBufMemAllocInfo;
-        imgStagingBufMemAllocInfo.allocationSize = imgStagingBufMemReq.size;
-
-        suitableMemoryTypeFound = false;
-        for (uint32_t i = 0; i < memProps.memoryTypeCount; i++) {
-            if (imgStagingBufMemReq.memoryTypeBits & (1 << i) &&
-                (memProps.memoryTypes[i].propertyFlags & vk::MemoryPropertyFlagBits::eHostVisible)) {
-                imgStagingBufMemAllocInfo.memoryTypeIndex = i;
-                suitableMemoryTypeFound = true;
-                break;
-            }
-        }
-        if (!suitableMemoryTypeFound) {
-            std::cerr << "適切なメモリタイプが存在しません。" << std::endl;
-            return false;
-        }
-
-        vk::UniqueDeviceMemory imgStagingBufMemory = m_Device->allocateMemoryUnique(imgStagingBufMemAllocInfo);
-
-        m_Device->bindBufferMemory(imgStagingBuf.get(), imgStagingBufMemory.get(), 0);
-
-        void* pImgStagingBufMem = m_Device->mapMemory(imgStagingBufMemory.get(), 0, imgDataSize);
-
-        std::memcpy(pImgStagingBufMem, pImgData, imgDataSize);
-
-        vk::MappedMemoryRange flushMemoryRange;
-        flushMemoryRange.memory = imgStagingBufMemory.get();
-        flushMemoryRange.offset = 0;
-        flushMemoryRange.size = imgDataSize;
-
-        m_Device->flushMappedMemoryRanges({ flushMemoryRange });
-
-        m_Device->unmapMemory(imgStagingBufMemory.get());
-
-        stbi_image_free(pImgData);
-
-        vk::CommandPoolCreateInfo tmpCmdPoolCreateInfo;
-        tmpCmdPoolCreateInfo.queueFamilyIndex = graphicsQueueFamilyIndex;
-        tmpCmdPoolCreateInfo.flags = vk::CommandPoolCreateFlagBits::eTransient;
-        vk::UniqueCommandPool tmpCmdPool = m_Device->createCommandPoolUnique(tmpCmdPoolCreateInfo);
-
-        vk::CommandBufferAllocateInfo tmpCmdBufAllocInfo;
-        tmpCmdBufAllocInfo.commandPool = tmpCmdPool.get();
-        tmpCmdBufAllocInfo.commandBufferCount = 1;
-        tmpCmdBufAllocInfo.level = vk::CommandBufferLevel::ePrimary;
-        std::vector<vk::UniqueCommandBuffer> tmpCmdBufs = m_Device->allocateCommandBuffersUnique(tmpCmdBufAllocInfo);
-
-        vk::CommandBufferBeginInfo cmdBeginInfo;
-        cmdBeginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
-
-        tmpCmdBufs[0]->begin(cmdBeginInfo);
-
-        {
-            vk::ImageMemoryBarrier barrior;
-            barrior.oldLayout = vk::ImageLayout::eUndefined;
-            barrior.newLayout = vk::ImageLayout::eTransferDstOptimal;
-            barrior.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-            barrior.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-            barrior.image = texImage.get();
-            barrior.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
-            barrior.subresourceRange.baseMipLevel = 0;
-            barrior.subresourceRange.levelCount = 1;
-            barrior.subresourceRange.baseArrayLayer = 0;
-            barrior.subresourceRange.layerCount = 1;
-            barrior.srcAccessMask = {};
-            barrior.dstAccessMask = vk::AccessFlagBits::eTransferWrite;
-            tmpCmdBufs[0]->pipelineBarrier(vk::PipelineStageFlagBits::eTopOfPipe, vk::PipelineStageFlagBits::eTransfer, {}, {}, {}, { barrior });
-        }
-
-        vk::BufferImageCopy imgCopyRegion;
-        imgCopyRegion.bufferOffset = 0;
-        imgCopyRegion.imageSubresource.aspectMask = vk::ImageAspectFlagBits::eColor;
-        imgCopyRegion.imageSubresource.mipLevel = 0;
-        imgCopyRegion.imageSubresource.baseArrayLayer = 0;
-        imgCopyRegion.imageSubresource.layerCount = 1;
-        imgCopyRegion.imageOffset = vk::Offset3D{ 0, 0, 0 };
-        imgCopyRegion.imageExtent = vk::Extent3D{ uint32_t(imgWidth), uint32_t(imgHeight), 1 };
-
-        imgCopyRegion.bufferRowLength = 0;
-        imgCopyRegion.bufferImageHeight = 0;
-
-        tmpCmdBufs[0]->copyBufferToImage(imgStagingBuf.get(), texImage.get(), vk::ImageLayout::eTransferDstOptimal, { imgCopyRegion });
-
-        {
-            vk::ImageMemoryBarrier barrior;
-            barrior.oldLayout = vk::ImageLayout::eTransferDstOptimal;
-            barrior.newLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-            barrior.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-            barrior.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-            barrior.image = texImage.get();
-            barrior.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
-            barrior.subresourceRange.baseMipLevel = 0;
-            barrior.subresourceRange.levelCount = 1;
-            barrior.subresourceRange.baseArrayLayer = 0;
-            barrior.subresourceRange.layerCount = 1;
-            barrior.srcAccessMask = vk::AccessFlagBits::eTransferWrite;
-            barrior.dstAccessMask = vk::AccessFlagBits::eShaderRead;
-            tmpCmdBufs[0]->pipelineBarrier(vk::PipelineStageFlagBits::eTransfer, vk::PipelineStageFlagBits::eFragmentShader, {}, {}, {}, { barrior });
-        }
-        tmpCmdBufs[0]->end();
-
-        vk::CommandBuffer submitCmdBuf[1] = { tmpCmdBufs[0].get() };
-        vk::SubmitInfo submitInfo;
-        submitInfo.commandBufferCount = 1;
-        submitInfo.pCommandBuffers = submitCmdBuf;
-
-        m_graphicsQueue.submit({ submitInfo });
-        m_graphicsQueue.waitIdle();
-    }
+    //int imgWidth, imgHeight, imgCh;
+    //auto pImgData = stbi_load(TextureFilePath, &imgWidth, &imgHeight, &imgCh, STBI_rgb_alpha);
+    //if (pImgData == nullptr) {
+    //    std::cerr << "画像ファイルの読み込みに失敗しました。" << std::endl;
+    //    return false;
+    //}
+    //
+    //vk::ImageCreateInfo texImgCreateInfo;
+    //texImgCreateInfo.imageType = vk::ImageType::e2D;
+    //texImgCreateInfo.extent = vk::Extent3D(imgWidth, imgHeight, 1);
+    //texImgCreateInfo.mipLevels = 1;
+    //texImgCreateInfo.arrayLayers = 1;
+    //texImgCreateInfo.format = vk::Format::eR8G8B8A8Unorm;
+    //texImgCreateInfo.tiling = vk::ImageTiling::eOptimal;
+    //texImgCreateInfo.initialLayout = vk::ImageLayout::eUndefined;
+    //texImgCreateInfo.usage = vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst;
+    //texImgCreateInfo.sharingMode = vk::SharingMode::eExclusive;
+    //texImgCreateInfo.samples = vk::SampleCountFlagBits::e1;
+    //
+    //vk::UniqueImage texImage = m_Device->createImageUnique(texImgCreateInfo);
+    //
+    //vk::MemoryRequirements texImgMemReq = m_Device->getImageMemoryRequirements(texImage.get());
+    //
+    //vk::MemoryAllocateInfo texImgMemAllocInfo;
+    //texImgMemAllocInfo.allocationSize = texImgMemReq.size;
+    //
+    //suitableMemoryTypeFound = false;
+    //for (uint32_t i = 0; i < memProps.memoryTypeCount; i++) {
+    //    if (texImgMemReq.memoryTypeBits & (1 << i)) {
+    //        texImgMemAllocInfo.memoryTypeIndex = i;
+    //        suitableMemoryTypeFound = true;
+    //        break;
+    //    }
+    //}
+    //
+    //if (!suitableMemoryTypeFound) {
+    //    std::cerr << "使用可能なメモリタイプがありません。" << std::endl;
+    //    return false;
+    //}
+    //
+    //vk::UniqueDeviceMemory texImgMem = m_Device->allocateMemoryUnique(texImgMemAllocInfo);
+    //
+    //m_Device->bindImageMemory(texImage.get(), texImgMem.get(), 0);
+    //
+    //{
+    //    size_t imgDataSize = 4 * imgWidth * imgHeight;
+    //
+    //    vk::BufferCreateInfo imgStagingBufferCreateInfo;
+    //    imgStagingBufferCreateInfo.size = imgDataSize;
+    //    imgStagingBufferCreateInfo.usage = vk::BufferUsageFlagBits::eTransferSrc;
+    //    imgStagingBufferCreateInfo.sharingMode = vk::SharingMode::eExclusive;
+    //
+    //    vk::UniqueBuffer imgStagingBuf = m_Device->createBufferUnique(imgStagingBufferCreateInfo);
+    //
+    //    vk::MemoryRequirements imgStagingBufMemReq = m_Device->getBufferMemoryRequirements(imgStagingBuf.get());
+    //
+    //    vk::MemoryAllocateInfo imgStagingBufMemAllocInfo;
+    //    imgStagingBufMemAllocInfo.allocationSize = imgStagingBufMemReq.size;
+    //
+    //    suitableMemoryTypeFound = false;
+    //    for (uint32_t i = 0; i < memProps.memoryTypeCount; i++) {
+    //        if (imgStagingBufMemReq.memoryTypeBits & (1 << i) &&
+    //            (memProps.memoryTypes[i].propertyFlags & vk::MemoryPropertyFlagBits::eHostVisible)) {
+    //            imgStagingBufMemAllocInfo.memoryTypeIndex = i;
+    //            suitableMemoryTypeFound = true;
+    //            break;
+    //        }
+    //    }
+    //    if (!suitableMemoryTypeFound) {
+    //        std::cerr << "適切なメモリタイプが存在しません。" << std::endl;
+    //        return false;
+    //    }
+    //
+    //    vk::UniqueDeviceMemory imgStagingBufMemory = m_Device->allocateMemoryUnique(imgStagingBufMemAllocInfo);
+    //
+    //    m_Device->bindBufferMemory(imgStagingBuf.get(), imgStagingBufMemory.get(), 0);
+    //
+    //    void* pImgStagingBufMem = m_Device->mapMemory(imgStagingBufMemory.get(), 0, imgDataSize);
+    //
+    //    std::memcpy(pImgStagingBufMem, pImgData, imgDataSize);
+    //
+    //    vk::MappedMemoryRange flushMemoryRange;
+    //    flushMemoryRange.memory = imgStagingBufMemory.get();
+    //    flushMemoryRange.offset = 0;
+    //    flushMemoryRange.size = imgDataSize;
+    //
+    //    m_Device->flushMappedMemoryRanges({ flushMemoryRange });
+    //
+    //    m_Device->unmapMemory(imgStagingBufMemory.get());
+    //
+    //    stbi_image_free(pImgData);
+    //
+    //    vk::CommandPoolCreateInfo tmpCmdPoolCreateInfo;
+    //    tmpCmdPoolCreateInfo.queueFamilyIndex = graphicsQueueFamilyIndex;
+    //    tmpCmdPoolCreateInfo.flags = vk::CommandPoolCreateFlagBits::eTransient;
+    //    vk::UniqueCommandPool tmpCmdPool = m_Device->createCommandPoolUnique(tmpCmdPoolCreateInfo);
+    //
+    //    vk::CommandBufferAllocateInfo tmpCmdBufAllocInfo;
+    //    tmpCmdBufAllocInfo.commandPool = tmpCmdPool.get();
+    //    tmpCmdBufAllocInfo.commandBufferCount = 1;
+    //    tmpCmdBufAllocInfo.level = vk::CommandBufferLevel::ePrimary;
+    //    std::vector<vk::UniqueCommandBuffer> tmpCmdBufs = m_Device->allocateCommandBuffersUnique(tmpCmdBufAllocInfo);
+    //
+    //    vk::CommandBufferBeginInfo cmdBeginInfo;
+    //    cmdBeginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
+    //
+    //    tmpCmdBufs[0]->begin(cmdBeginInfo);
+    //
+    //    {
+    //        vk::ImageMemoryBarrier barrior;
+    //        barrior.oldLayout = vk::ImageLayout::eUndefined;
+    //        barrior.newLayout = vk::ImageLayout::eTransferDstOptimal;
+    //        barrior.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    //        barrior.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    //        barrior.image = texImage.get();
+    //        barrior.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
+    //        barrior.subresourceRange.baseMipLevel = 0;
+    //        barrior.subresourceRange.levelCount = 1;
+    //        barrior.subresourceRange.baseArrayLayer = 0;
+    //        barrior.subresourceRange.layerCount = 1;
+    //        barrior.srcAccessMask = {};
+    //        barrior.dstAccessMask = vk::AccessFlagBits::eTransferWrite;
+    //        tmpCmdBufs[0]->pipelineBarrier(vk::PipelineStageFlagBits::eTopOfPipe, vk::PipelineStageFlagBits::eTransfer, {}, {}, {}, { barrior });
+    //    }
+    //
+    //    vk::BufferImageCopy imgCopyRegion;
+    //    imgCopyRegion.bufferOffset = 0;
+    //    imgCopyRegion.imageSubresource.aspectMask = vk::ImageAspectFlagBits::eColor;
+    //    imgCopyRegion.imageSubresource.mipLevel = 0;
+    //    imgCopyRegion.imageSubresource.baseArrayLayer = 0;
+    //    imgCopyRegion.imageSubresource.layerCount = 1;
+    //    imgCopyRegion.imageOffset = vk::Offset3D{ 0, 0, 0 };
+    //    imgCopyRegion.imageExtent = vk::Extent3D{ uint32_t(imgWidth), uint32_t(imgHeight), 1 };
+    //
+    //    imgCopyRegion.bufferRowLength = 0;
+    //    imgCopyRegion.bufferImageHeight = 0;
+    //
+    //    tmpCmdBufs[0]->copyBufferToImage(imgStagingBuf.get(), texImage.get(), vk::ImageLayout::eTransferDstOptimal, { imgCopyRegion });
+    //
+    //    {
+    //        vk::ImageMemoryBarrier barrior;
+    //        barrior.oldLayout = vk::ImageLayout::eTransferDstOptimal;
+    //        barrior.newLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+    //        barrior.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    //        barrior.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    //        barrior.image = texImage.get();
+    //        barrior.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
+    //        barrior.subresourceRange.baseMipLevel = 0;
+    //        barrior.subresourceRange.levelCount = 1;
+    //        barrior.subresourceRange.baseArrayLayer = 0;
+    //        barrior.subresourceRange.layerCount = 1;
+    //        barrior.srcAccessMask = vk::AccessFlagBits::eTransferWrite;
+    //        barrior.dstAccessMask = vk::AccessFlagBits::eShaderRead;
+    //        tmpCmdBufs[0]->pipelineBarrier(vk::PipelineStageFlagBits::eTransfer, vk::PipelineStageFlagBits::eFragmentShader, {}, {}, {}, { barrior });
+    //    }
+    //    tmpCmdBufs[0]->end();
+    //
+    //    vk::CommandBuffer submitCmdBuf[1] = { tmpCmdBufs[0].get() };
+    //    vk::SubmitInfo submitInfo;
+    //    submitInfo.commandBufferCount = 1;
+    //    submitInfo.pCommandBuffers = submitCmdBuf;
+    //
+    //    m_graphicsQueue.submit({ submitInfo });
+    //    m_graphicsQueue.waitIdle();
+    //}
 
     vk::SamplerCreateInfo samplerCreateInfo;
     samplerCreateInfo.magFilter = vk::Filter::eLinear;
@@ -672,7 +675,6 @@ bool VulkanApp::Init()
     samplerCreateInfo.minLod = 0.0f;
     samplerCreateInfo.maxLod = 0.0f;
     vk::UniqueSampler sampler = m_Device->createSamplerUnique(samplerCreateInfo);
-
 
     vk::DescriptorSetLayoutBinding descSetLayoutBinding[2];
     descSetLayoutBinding[0].binding = 0;
@@ -728,6 +730,86 @@ bool VulkanApp::Init()
     writeDescSet.pBufferInfo = descBufInfo;
 
     m_Device->updateDescriptorSets({ writeDescSet }, {});
+
+
+
+
+    /// ディスクリプタセットの作成 2
+    uniformBuf2 = m_Device->createBufferUnique(uniformBufferCreateInfo);
+
+    vk::MemoryRequirements uniformBufMemReq2 = m_Device->getBufferMemoryRequirements(uniformBuf2.get());
+
+    vk::MemoryAllocateInfo uniformBufMemAllocInfo2;
+    uniformBufMemAllocInfo2.allocationSize = uniformBufMemReq2.size;
+
+    suitableMemoryTypeFound = false;
+    for (uint32_t i = 0; i < memProps.memoryTypeCount; i++) {
+        if (uniformBufMemReq.memoryTypeBits & (1 << i) &&
+            (memProps.memoryTypes[i].propertyFlags & vk::MemoryPropertyFlagBits::eHostVisible)) {
+            uniformBufMemAllocInfo2.memoryTypeIndex = i;
+            suitableMemoryTypeFound = true;
+            break;
+        }
+    }
+    if (!suitableMemoryTypeFound) {
+        std::cerr << "適切なメモリタイプが存在しません。" << std::endl;
+        return false;
+    }
+
+    uniformBufMemory2 = m_Device->allocateMemoryUnique(uniformBufMemAllocInfo2);
+
+    m_Device->bindBufferMemory(uniformBuf2.get(), uniformBufMemory2.get(), 0);
+
+    pUniformBufMem2 = m_Device->mapMemory(uniformBufMemory2.get(), 0, sizeof(SceneData));
+
+    descSetLayoutBinding[0].binding = 0;
+    descSetLayoutBinding[0].descriptorType = vk::DescriptorType::eUniformBuffer;
+    descSetLayoutBinding[0].descriptorCount = 1;
+    descSetLayoutBinding[0].stageFlags = vk::ShaderStageFlagBits::eVertex;
+    descSetLayoutBinding[1].binding = 1;
+    descSetLayoutBinding[1].descriptorType = vk::DescriptorType::eCombinedImageSampler;
+    descSetLayoutBinding[1].descriptorCount = 1;
+    descSetLayoutBinding[1].stageFlags = vk::ShaderStageFlagBits::eFragment;
+
+    descSetLayoutCreateInfo.bindingCount = std::size(descSetLayoutBinding);
+    descSetLayoutCreateInfo.pBindings = descSetLayoutBinding;
+
+    descSetLayout2 = m_Device->createDescriptorSetLayoutUnique(descSetLayoutCreateInfo);
+
+    descPoolSize[0].type = vk::DescriptorType::eUniformBuffer;
+    descPoolSize[0].descriptorCount = 1;
+    descPoolSize[1].type = vk::DescriptorType::eCombinedImageSampler;
+    descPoolSize[1].descriptorCount = 1;
+
+    descPoolCreateInfo.poolSizeCount = std::size(descPoolSize);
+    descPoolCreateInfo.pPoolSizes = descPoolSize;
+    descPoolCreateInfo.maxSets = 1;
+
+    descPool2 = m_Device->createDescriptorPoolUnique(descPoolCreateInfo);
+
+
+    auto descSetLayouts2 = { descSetLayout2.get() };
+
+    descSetAllocInfo.descriptorPool = descPool2.get();
+    descSetAllocInfo.descriptorSetCount = static_cast<uint32_t>(descSetLayouts2.size());
+    descSetAllocInfo.pSetLayouts = descSetLayouts2.begin();
+
+    descSets2 = m_Device->allocateDescriptorSetsUnique(descSetAllocInfo);
+
+    writeDescSet.dstSet = descSets2[0].get();
+    writeDescSet.dstBinding = 0;
+    writeDescSet.dstArrayElement = 0;
+    writeDescSet.descriptorType = vk::DescriptorType::eUniformBuffer;
+
+    descBufInfo[0].buffer = uniformBuf2.get();
+    descBufInfo[0].offset = 0;
+    descBufInfo[0].range = sizeof(SceneData);
+
+    writeDescSet.descriptorCount = 1;
+    writeDescSet.pBufferInfo = descBufInfo;
+
+    m_Device->updateDescriptorSets({ writeDescSet }, {});
+
 
 
 
@@ -890,7 +972,7 @@ void VulkanApp::RecreateSwapchain()
     blend.attachmentCount = 1;
     blend.pAttachments = blendattachment;
 
-    auto pipelineDescSetLayouts = { descSetLayout.get() };
+    auto pipelineDescSetLayouts = { descSetLayout.get(),descSetLayout2.get()};
 
     vk::PipelineLayoutCreateInfo layoutCreateInfo;
     layoutCreateInfo.setLayoutCount = static_cast<uint32_t>(pipelineDescSetLayouts.size());
@@ -1003,8 +1085,8 @@ void VulkanApp::Update()
 {
     static float angle = 0.0f;
     angle += SDLApp::GetInstance().DeltaTime();
-    sceneData.rectCenter.x = sinf(angle * 0.002f)* 0.5f;
-    sceneData.rectCenter.y = cosf(angle * 0.002f)* 0.5f;
+    sceneData1.rectCenter.x = sinf(angle * 0.002f)* 0.5f;
+    sceneData1.rectCenter.y = cosf(angle * 0.002f)* 0.5f;
 
     m_Device->waitForFences({ imgRenderedFence.get() }, VK_TRUE, UINT64_MAX);
 
@@ -1022,14 +1104,15 @@ void VulkanApp::Update()
 
     m_Device->resetFences({ imgRenderedFence.get() });
 
-    std::memcpy(pUniformBufMem, &sceneData, sizeof(SceneData));
+    std::memcpy(pUniformBufMem, &sceneData1, sizeof(SceneData));
 
-    vk::MappedMemoryRange flushMemoryRange;
-    flushMemoryRange.memory = uniformBufMemory.get();
-    flushMemoryRange.offset = 0;
-    flushMemoryRange.size = sizeof(SceneData);
+    std::memcpy(pUniformBufMem2, &sceneData2, sizeof(SceneData));
 
-    //m_Device->flushMappedMemoryRanges({ flushMemoryRange });
+    //vk::MappedMemoryRange flushMemoryRange;
+    //flushMemoryRange.memory = uniformBufMemory.get();
+    //flushMemoryRange.offset = 0;
+    //flushMemoryRange.size = sizeof(SceneData);
+    //m_Device->flushMappedMemoryRanges(flushMemoryRange);
 
     uint32_t imgIndex = acquireImgResult.value;
 
@@ -1041,7 +1124,7 @@ void VulkanApp::Update()
     vk::ClearValue clearVal[1];
     clearVal[0].color.float32[0] = 0.0f;
     clearVal[0].color.float32[1] = 0.0f;
-    clearVal[0].color.float32[2] = 0.0f;
+    clearVal[0].color.float32[2] = 1.0f;
     clearVal[0].color.float32[3] = 1.0f;
 
     vk::RenderPassBeginInfo renderpassBeginInfo;
@@ -1051,12 +1134,18 @@ void VulkanApp::Update()
     renderpassBeginInfo.clearValueCount = 1;
     renderpassBeginInfo.pClearValues = clearVal;
 
+    vk::Buffer vertexBuffers[] = { vertexBuf.get(),vertexBuf.get()};
+    vk::DescriptorSet descBuffers[] = { descSets[0].get(),descSets2[0].get()};
+    vk::DeviceSize offsets[] = { 0,1 };
+
     m_CmdBufs[0]->beginRenderPass(renderpassBeginInfo, vk::SubpassContents::eInline);
     
     m_CmdBufs[0]->bindPipeline(vk::PipelineBindPoint::eGraphics, m_Pipeline.get());
-    m_CmdBufs[0]->bindVertexBuffers(0, { vertexBuf.get() }, { 0 }); // 追加
+    m_CmdBufs[0]->bindVertexBuffers(0,2,vertexBuffers,offsets); // 追加
     m_CmdBufs[0]->bindIndexBuffer(indexBuf.get(), 0, vk::IndexType::eUint16);
-    m_CmdBufs[0]->bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pipelineLayout.get(), 0, { descSets[0].get() }, {});
+    m_CmdBufs[0]->bindIndexBuffer(indexBuf.get(), 1, vk::IndexType::eUint16);
+    m_CmdBufs[0]->bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pipelineLayout.get(), 0, descBuffers, {});
+    m_CmdBufs[0]->drawIndexed(static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
     m_CmdBufs[0]->drawIndexed(static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
     
     m_CmdBufs[0]->endRenderPass();

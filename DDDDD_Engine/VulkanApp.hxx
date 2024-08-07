@@ -28,7 +28,7 @@ public:
 
 	/// @brief デバイスの取得
 	/// @return デバイス
-	VkDevice GetDevice() { return m_Device.get(); }
+	vk::Device GetDevice() { return m_Device.get(); }
 private:
 	/// @brief コンストラクタ
 	VulkanApp();
@@ -54,6 +54,7 @@ private:
 	std::vector<vk::UniqueImageView>		m_swapchainImageViews;
 	std::vector<vk::UniqueCommandBuffer>	m_CmdBufs;
 	std::vector<vk::UniqueDescriptorSet>	descSets;
+	std::vector<vk::UniqueDescriptorSet>	descSets2;
 	vk::Queue								m_graphicsQueue;
 
 	vk::UniqueInstance			m_Instance;
@@ -75,14 +76,19 @@ private:
 	vk::UniqueBuffer			indexBuf;
 	vk::UniqueBuffer			stagingBuf;
 	vk::UniqueBuffer			uniformBuf;
+	vk::UniqueBuffer			uniformBuf2;
 	vk::UniqueDeviceMemory		vertexBufMemory;
 	vk::UniqueDeviceMemory		indexBufMemory;
 	vk::UniqueDeviceMemory		stagingBufMemory;
 	vk::UniqueDeviceMemory		uniformBufMemory;
+	vk::UniqueDeviceMemory		uniformBufMemory2;
 	vk::UniqueDescriptorSetLayout descSetLayout;
 	vk::UniqueDescriptorPool	descPool;
+	vk::UniqueDescriptorSetLayout descSetLayout2;
+	vk::UniqueDescriptorPool	descPool2;
 
 	void* pUniformBufMem;
+	void* pUniformBufMem2;
 };
 
 #endif // !_____Vulkan_HXX_____

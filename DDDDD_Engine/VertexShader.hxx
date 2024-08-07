@@ -9,14 +9,15 @@
 #define _____VertexShader_HXX_____
 
 // =-=-= インクルード部 =-=-=
+#include "Shader.hxx"
 
-
-class VertexShader
+class VertexShader : public shader
 {
 public:
 	VertexShader();
 	~VertexShader();
 
+	void Bind() override;
 private:
 
 };

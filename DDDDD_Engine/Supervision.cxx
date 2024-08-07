@@ -11,6 +11,12 @@
 /// @return ¬Œ÷‚µ‚½‚çtrue
 bool Supervision::Initialize()
 {
+	//bool result = true;
+	//result = SDLApp::CreateInstance().Init();
+	//result = VulkanApp::CreateInstance().Init();
+	//result = SceneMng::CreateInstance().Init();
+	//result = DebugClass::CreateInstance().Init();
+	//result = GameObjectMng::CreateInstance().Init();
 	// ‰Šú‰»ˆ—‚Í‚±‚Ì’†‚Ö
 	if(	          SDLApp::CreateInstance().Init() 
 		&&     VulkanApp::CreateInstance().Init() 

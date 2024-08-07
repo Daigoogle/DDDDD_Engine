@@ -9,14 +9,15 @@
 #define _____FragmentShader_HXX_____
 
 // =-=-= インクルード部 =-=-=
+#include "Shader.hxx"
 
-
-class FragmentShader
+class FragmentShader: public shader
 {
 public:
 	FragmentShader();
 	~FragmentShader();
 
+	void Bind() override;
 private:
 
 };

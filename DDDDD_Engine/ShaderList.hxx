@@ -14,17 +14,36 @@
 
 #include "SingletonsMng.hxx"
 
+enum class VSDefine
+{
+	Default,
+};
+enum class FSDefine
+{
+	Default,
+};
+
 class ShaderList:public Singleton<ShaderList>
 {
 	friend class Singleton<ShaderList>;
+	enum class ShaderType {
+		Vertex,
+		Fragment,
+		Geometry,
+	};
 public:
-	void LoadVertexShader(std::string fileName);
-	void LoadFragmentShader(std::string fileName);
+	bool Init() override;
+	void ReSize();
 private:
 	ShaderList();
 	~ShaderList();
 
+	void LoadShader(const std::string& path, ShaderType type);
+
+	std::vector<vk::PipelineShaderStageCreateInfo> m_ShaderStages;
 	std::vector<vk::UniqueShaderModule> m_ShaderList;
+
+	vk::Device m_Device;
 };
 
 #endif // !_____ShaderList_HXX_____

@@ -9,3 +9,8 @@ FragmentShader::~FragmentShader()
 {
 
 }
+
+void FragmentShader::Bind()
+{
+	
+}

@@ -9,3 +9,8 @@ VertexShader::~VertexShader()
 {
 
 }
+
+void VertexShader::Bind()
+{
+
+}
